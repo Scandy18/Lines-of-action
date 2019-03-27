@@ -69,11 +69,11 @@ for i in range(1, 9):
     for j in range(1, 9):
         board.create_rectangle(i * 30, j * 30, i * 30 + 30, j * 30 + 30)
 board.create_rectangle(29, 29, 271, 271)
-board.create_text(150, 15, text='A  B  C  D  E  F  G  H', font="time 13 bold")
-board.create_text(150, 285, text='A  B  C  D  E  F  G  H', font="time 13 bold")
+board.create_text(150, 15, text='A  B  C  D  E  F  G  H', font="Courier 13 bold")
+board.create_text(150, 285, text='A  B  C  D  E  F  G  H', font="Courier 13 bold")
 for i in range(8):
-    board.create_text(15, 45 + 30 * i, text=8-i, font="time 13 bold")
-    board.create_text(285, 45 + 30 * i, text=8-i, font="time 13 bold")
+    board.create_text(15, 45 + 30 * i, text=8-i, font="Courier 13 bold")
+    board.create_text(285, 45 + 30 * i, text=8-i, font="Courier 13 bold")
 
 for i in range(12):
     white.append(board.create_oval(white_piece[i][0] * 30 + 4, white_piece[i][1] * 30 + 4,
