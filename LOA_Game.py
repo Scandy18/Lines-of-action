@@ -48,7 +48,7 @@ def legal_move(piece):
     if y - pace >= 1:
         flag = True
         for i in range(1, pace - 1):
-            if board_situation[x][y - i] != SIDE + 1 and board_situation[x][y + i] != 0:
+            if board_situation[x][y - i] != SIDE + 1 and board_situation[x][y - i] != 0:
                 flag = False
                 break
         if flag:
