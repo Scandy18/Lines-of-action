@@ -8,8 +8,10 @@ SELECTED_BLACK_PIECE = 0
 white_in_canvas = []
 black_in_canvas = []
 #  pos in board
+black_piece_count = 12
 black_piece = [[2, 1], [3, 1], [4, 1], [5, 1], [6, 1], [7, 1],
                [2, 8], [3, 8], [4, 8], [5, 8], [6, 8], [7, 8]]
+white_piece_count = 12
 white_piece = [[1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7],
                [8, 2], [8, 3], [8, 4], [8, 5], [8, 6], [8, 7]]
 #  each line has how many piece
@@ -29,6 +31,55 @@ board_situation = [[-1, -1, -1, -1, -1, -1, -1, -1, -1],
                    [-1, 2, 0, 0, 0, 0, 0, 0, 2],
                    [-1, 2, 0, 0, 0, 0, 0, 0, 2],
                    [-1, 0, 1, 1, 1, 1, 1, 1, 0]]
+
+
+def reset():
+    global SIDE
+    global SELECTED
+    global SELECTED_BLACK_PIECE
+    global SELECTED_WHITE_PIECE
+    global black_piece
+    global white_piece
+    global black_piece_count
+    global white_piece_count
+    global board_situation
+    global line_count
+    global left_side_mark
+    if not SIDE:
+        right_side.delete(right_side_mark)
+        left_side_mark = left_side.create_oval(39, 139, 61, 161, fill="black")
+    SIDE = 1
+    SELECTED = 0
+    SELECTED_BLACK_PIECE = 0
+    SELECTED_WHITE_PIECE = 0
+    black_piece.clear()
+    black_piece = [[2, 1], [3, 1], [4, 1], [5, 1], [6, 1], [7, 1],
+                   [2, 8], [3, 8], [4, 8], [5, 8], [6, 8], [7, 8]]
+    black_piece_count = 12
+    white_piece.clear()
+    white_piece = [[1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7],
+                   [8, 2], [8, 3], [8, 4], [8, 5], [8, 6], [8, 7]]
+    white_piece_count = 12
+    board_situation = [[-1, -1, -1, -1, -1, -1, -1, -1, -1],
+                       [-1, 0, 1, 1, 1, 1, 1, 1, 0],
+                       [-1, 2, 0, 0, 0, 0, 0, 0, 2],
+                       [-1, 2, 0, 0, 0, 0, 0, 0, 2],
+                       [-1, 2, 0, 0, 0, 0, 0, 0, 2],
+                       [-1, 2, 0, 0, 0, 0, 0, 0, 2],
+                       [-1, 2, 0, 0, 0, 0, 0, 0, 2],
+                       [-1, 2, 0, 0, 0, 0, 0, 0, 2],
+                       [-1, 0, 1, 1, 1, 1, 1, 1, 0]]
+    line_count = [2] * 42
+    line_count[0] = line_count[7] = line_count[8] = line_count[15] = 6
+    line_count[22] = line_count[35] = 0
+    for i in range(12):
+        board.coords(black_in_canvas[i],
+                     black_piece[i][0] * 30 + 4, 300 - (black_piece[i][1] * 30 + 4),
+                     black_piece[i][0] * 30 + 26, 300 - (black_piece[i][1] * 30 + 26))
+    for i in range(12):
+        board.coords(white_in_canvas[i],
+                     white_piece[i][0] * 30 + 4, 300 - (white_piece[i][1] * 30 + 4),
+                     white_piece[i][0] * 30 + 26, 300 - (white_piece[i][1] * 30 + 26))
 
 
 def legal_move(piece):
@@ -119,6 +170,10 @@ def mouse_call(event):
     global SELECTED_WHITE_PIECE
     global black_piece
     global white_piece
+    global black_piece_count
+    global white_piece_count
+    global left_side_mark
+    global right_side_mark
     print("click at", posx, posy)
     if not SELECTED:
         if SIDE and [posx, posy] in black_piece:    # black and clicked a black piece
@@ -129,7 +184,7 @@ def mouse_call(event):
         if not SIDE and [posx, posy] in white_piece:    # white and clicked a white piece
             SELECTED = 1
             SELECTED_WHITE_PIECE = white_piece.index([posx, posy])
-            print("Select Black", SELECTED_WHITE_PIECE)
+            print("Select White", SELECTED_WHITE_PIECE)
             print(legal_move(white_piece[SELECTED_BLACK_PIECE]))
     else:
         if SIDE:  # black
@@ -157,8 +212,9 @@ def mouse_call(event):
                              )
                 # eat piece
                 if [posx, posy] in white_piece:  # one white out
-                    board.delete(white_in_canvas[white_piece.index([posx, posy])])
+                    board.coords(white_in_canvas[white_piece.index([posx, posy])], 301, 301, 301, 301)  # move out
                     white_piece[white_piece.index([posx, posy])] = [-1, -1]
+                    white_piece_count = white_piece_count - 1
                 else:
                     line_count[posx + 7] = line_count[posx + 7] + 1
                     line_count[posy - 1] = line_count[posy - 1] + 1
@@ -166,6 +222,8 @@ def mouse_call(event):
                     line_count[posx - posy + 35] = line_count[posx - posy + 35] + 1
                 # change side to white
                 SIDE = 0
+                left_side.delete(left_side_mark)
+                right_side_mark = right_side.create_oval(39, 139, 61, 161, fill="white")
         else:  # white
             if [posx, posy] == white_piece[SELECTED_WHITE_PIECE]:   # click the selected piece
                 SELECTED = 0
@@ -190,9 +248,10 @@ def mouse_call(event):
                              posx * 30 + 26, (9 - posy) * 30 + 26
                              )
                 # eat piece
-                if [posx, posy] in black_piece:  # one white out
-                    board.delete(black_in_canvas[black_piece.index([posx, posy])])
+                if [posx, posy] in black_piece:  # one black out
+                    board.coords(black_in_canvas[black_piece.index([posx, posy])], 301, 301, 301, 301)  # move out
                     black_piece[black_piece.index([posx, posy])] = [-1, -1]
+                    black_piece_count = black_piece_count - 1
                 else:
                     line_count[posx + 7] = line_count[posx + 7] + 1
                     line_count[posy - 1] = line_count[posy - 1] + 1
@@ -200,13 +259,14 @@ def mouse_call(event):
                     line_count[posx - posy + 35] = line_count[posx - posy + 35] + 1
                 # change side to black
                 SIDE = 1
+                right_side.delete(right_side_mark)
+                left_side_mark = left_side.create_oval(39, 139, 61, 161, fill="black")
 
 
 top = tkinter.Tk()
 top.title("Line of Action")
 top.geometry('500x500')
 top.resizable(width=False, height=False)
-
 # draw board
 board = tkinter.Canvas(top, width=300, height=300, bg='Beige')
 board.bind("<Button-1>", mouse_call)
@@ -231,5 +291,18 @@ for i in range(12):
                                              black_piece[i][0] * 30 + 26, 300 - (black_piece[i][1] * 30 + 26),
                                              fill="black")
                            )
+tkinter.Button(top, text="RESET", command=reset).place(width=80, height=50, x=210, y=325)
+# left is black
+left_side = tkinter.Canvas(top, width=100, height=300)
+left_side.create_text(50, 100, text='BLACK', font="Courier 16 bold")
+if SIDE:
+    left_side_mark = left_side.create_oval(39, 139, 61, 161, fill="black")
+left_side.place(x=0, y=0)
+# right is white
+right_side = tkinter.Canvas(top, width=100, height=300)
+right_side.create_text(50, 100, text='WHITE', font="Courier 16 bold")
+if not SIDE:
+    right_side_mark = left_side.create_oval(39, 139, 61, 161, fill="white")
+right_side.place(x=400, y=0)
 top.mainloop()
 
