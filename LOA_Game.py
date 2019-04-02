@@ -69,6 +69,7 @@ def reset():
                        [-1, 2, 0, 0, 0, 0, 0, 0, 2],
                        [-1, 2, 0, 0, 0, 0, 0, 0, 2],
                        [-1, 0, 1, 1, 1, 1, 1, 1, 0]]
+    line_count.clear()
     line_count = [2] * 42
     line_count[0] = line_count[7] = line_count[8] = line_count[15] = 6
     line_count[22] = line_count[35] = 0
@@ -94,6 +95,8 @@ def legal_move(piece):
             if board_situation[x][y + i] != SIDE + 1 and board_situation[x][y + i] != 0:
                 flag = False
                 break
+        if board_situation[x][y + pace] == SIDE + 1:
+            flag = False
         if flag:
             move_list.append([x, y + pace])
     if y - pace >= 1:
@@ -102,6 +105,8 @@ def legal_move(piece):
             if board_situation[x][y - i] != SIDE + 1 and board_situation[x][y - i] != 0:
                 flag = False
                 break
+        if board_situation[x][y - pace] == SIDE + 1:
+            flag = False
         if flag:
             move_list.append([x, y - pace])
     # left-right
@@ -112,6 +117,8 @@ def legal_move(piece):
             if board_situation[x + i][y] != SIDE + 1 and board_situation[x + i][y] != 0:
                 flag = False
                 break
+        if board_situation[x + pace][y] == SIDE + 1:
+            flag = False
         if flag:
             move_list.append([x + pace, y])
     if x - pace >= 0:
@@ -120,42 +127,52 @@ def legal_move(piece):
             if board_situation[x - i][y] != SIDE + 1 and board_situation[x - i][y] != 0:
                 flag = False
                 break
+        if board_situation[x - pace][y] == SIDE + 1:
+            flag = False
         if flag:
             move_list.append([x - pace, y])
     # 2-4
     pace = line_count[x + y + 13]
-    if x + pace <= 8:
+    if x + pace <= 8 and y - pace >= 1:
         flag = True
         for i in range(1, pace - 1):
             if board_situation[x + i][y - i] != SIDE + 1 and board_situation[x + i][y - i] != 0:
                 flag = False
                 break
+        if board_situation[x + pace][y - pace] == SIDE + 1:
+            flag = False
         if flag:
             move_list.append([x + pace, y - pace])
-    if x - pace >= 0:
+    if x - pace >= 1 and y + pace <= 8:
         flag = True
         for i in range(1, pace - 1):
             if board_situation[x - i][y + i] != SIDE + 1 and board_situation[x - i][y + i] != 0:
                 flag = False
                 break
+        if board_situation[x - pace][y + pace] == SIDE + 1:
+            flag = False
         if flag:
             move_list.append([x - pace, y + pace])
     # 1-3
     pace = line_count[x - y + 35]
-    if x + pace <= 8:
+    if x + pace <= 8 and y + pace <= 8:
         flag = True
         for i in range(1, pace - 1):
             if board_situation[x + i][y + i] != SIDE + 1 and board_situation[x + i][y + i] != 0:
                 flag = False
                 break
+        if board_situation[x + pace][y + pace] == SIDE + 1:
+            flag = False
         if flag:
             move_list.append([x + pace, y + pace])
-    if x - pace >= 0:
+    if x - pace >= 1 and y - pace >= 1:
         flag = True
         for i in range(1, pace - 1):
             if board_situation[x - i][y - i] != SIDE + 1 and board_situation[x - i][y - i] != 0:
                 flag = False
                 break
+        if board_situation[x - pace][y - pace] == SIDE + 1:
+            flag = False
         if flag:
             move_list.append([x - pace, y - pace])
     return move_list
@@ -185,13 +202,13 @@ def mouse_call(event):
             SELECTED = 1
             SELECTED_WHITE_PIECE = white_piece.index([posx, posy])
             print("Select White", SELECTED_WHITE_PIECE)
-            print(legal_move(white_piece[SELECTED_BLACK_PIECE]))
+            print(legal_move(white_piece[SELECTED_WHITE_PIECE]))
     else:
         if SIDE:  # black
             if [posx, posy] == black_piece[SELECTED_BLACK_PIECE]:   # click the selected piece
                 SELECTED = 0
                 print("Release piece")
-            elif [posx, posy] not in black_piece and [posx, posy] in legal_move(black_piece[SELECTED_BLACK_PIECE]):
+            elif [posx, posy] in legal_move(black_piece[SELECTED_BLACK_PIECE]):
                 SELECTED = 0
                 oldx = black_piece[SELECTED_BLACK_PIECE][0]
                 oldy = black_piece[SELECTED_BLACK_PIECE][1]
@@ -213,7 +230,7 @@ def mouse_call(event):
                 # eat piece
                 if [posx, posy] in white_piece:  # one white out
                     board.coords(white_in_canvas[white_piece.index([posx, posy])], 301, 301, 301, 301)  # move out
-                    white_piece[white_piece.index([posx, posy])] = [-1, -1]
+                    white_piece[white_piece.index([posx, posy])] = [114, 114]
                     white_piece_count = white_piece_count - 1
                 else:
                     line_count[posx + 7] = line_count[posx + 7] + 1
@@ -250,7 +267,7 @@ def mouse_call(event):
                 # eat piece
                 if [posx, posy] in black_piece:  # one black out
                     board.coords(black_in_canvas[black_piece.index([posx, posy])], 301, 301, 301, 301)  # move out
-                    black_piece[black_piece.index([posx, posy])] = [-1, -1]
+                    black_piece[black_piece.index([posx, posy])] = [114, 114]
                     black_piece_count = black_piece_count - 1
                 else:
                     line_count[posx + 7] = line_count[posx + 7] + 1
