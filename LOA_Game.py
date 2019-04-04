@@ -7,6 +7,7 @@ SELECTED_BLACK_PIECE = 0
 # tag of pieces
 white_in_canvas = []
 black_in_canvas = []
+legal_move_marks = []
 #  pos in board
 black_piece_count = 12
 black_piece = [[2, 1], [3, 1], [4, 1], [5, 1], [6, 1], [7, 1],
@@ -178,6 +179,24 @@ def legal_move(piece):
     return move_list
 
 
+def print_legal_move_marks(marklist):
+    global legal_move_marks
+    for m in marklist:
+        legal_move_marks.append(board.create_line(m[0] * 30 + 15, 300 - (m[1] * 30 + 10),
+                                                  m[0] * 30 + 15, 300 - (m[1] * 30 + 20),
+                                                  fill="red"))
+        legal_move_marks.append(board.create_line(m[0] * 30 + 10, 300 - (m[1] * 30 + 15),
+                                                  m[0] * 30 + 20, 300 - (m[1] * 30 + 15),
+                                                  fill="red"))
+
+
+def del_legal_move_marks():
+    global legal_move_marks
+    for m in legal_move_marks:
+        board.delete(m)
+    legal_move_marks.clear()
+
+
 def mouse_call(event):
     posx = event.x // 30  # 1-8
     posy = 9 - event.y // 30  # 8-1
@@ -198,18 +217,23 @@ def mouse_call(event):
             SELECTED_BLACK_PIECE = black_piece.index([posx, posy])
             print("Select Black", SELECTED_BLACK_PIECE)
             print(legal_move(black_piece[SELECTED_BLACK_PIECE]))
+            print_legal_move_marks(legal_move(black_piece[SELECTED_BLACK_PIECE]))
+
         if not SIDE and [posx, posy] in white_piece:    # white and clicked a white piece
             SELECTED = 1
             SELECTED_WHITE_PIECE = white_piece.index([posx, posy])
             print("Select White", SELECTED_WHITE_PIECE)
             print(legal_move(white_piece[SELECTED_WHITE_PIECE]))
+            print_legal_move_marks(legal_move(white_piece[SELECTED_WHITE_PIECE]))
     else:
         if SIDE:  # black
             if [posx, posy] == black_piece[SELECTED_BLACK_PIECE]:   # click the selected piece
                 SELECTED = 0
+                del_legal_move_marks()
                 print("Release piece")
             elif [posx, posy] in legal_move(black_piece[SELECTED_BLACK_PIECE]):
                 SELECTED = 0
+                del_legal_move_marks()
                 oldx = black_piece[SELECTED_BLACK_PIECE][0]
                 oldy = black_piece[SELECTED_BLACK_PIECE][1]
                 # update board situation
@@ -244,9 +268,11 @@ def mouse_call(event):
         else:  # white
             if [posx, posy] == white_piece[SELECTED_WHITE_PIECE]:   # click the selected piece
                 SELECTED = 0
+                del_legal_move_marks()
                 print("Release piece")
-            elif [posx, posy] not in white_piece and [posx, posy] in legal_move(white_piece[SELECTED_WHITE_PIECE]):
+            elif [posx, posy] in legal_move(white_piece[SELECTED_WHITE_PIECE]):
                 SELECTED = 0
+                del_legal_move_marks()
                 oldx = white_piece[SELECTED_WHITE_PIECE][0]
                 oldy = white_piece[SELECTED_WHITE_PIECE][1]
                 # update board situation
