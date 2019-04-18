@@ -3,7 +3,7 @@ import sys
 import random
 import LineOfA
 
-MAX_ROUND = 201
+MAX_ROUND = 202
 
 
 class State(object):
