@@ -96,7 +96,7 @@ def judgeWin():
     global con_count
     global check_map
     global board_situation
-    check_map = board_situation
+    check_map = board_situation[:]
     #expand the size to avoid out of index
     for i in range(0,9):
         check_map[i].append(-1)
@@ -365,8 +365,13 @@ def mouse_call(event):
                 SIDE = 0
                 left_side.delete(left_side_mark)
                 right_side_mark = right_side.create_oval(39, 139, 61, 161, fill="white")
-                if judgeWin() == 0:
+                WinRes = judgeWin()
+                if WinRes == 0:
                     print("nothing")
+                elif WinRes == 1:
+                    print("balck win")
+                else:
+                    print("red win")
         else:  # white
             if [posx, posy] == white_piece[SELECTED_WHITE_PIECE]:   # click the selected piece
                 SELECTED = 0
@@ -406,8 +411,13 @@ def mouse_call(event):
                 SIDE = 1
                 right_side.delete(right_side_mark)
                 left_side_mark = left_side.create_oval(39, 139, 61, 161, fill="black")
-            if judgeWin() == 0:
-                print("nothing")
+                WinRes = judgeWin()
+                if WinRes == 0:
+                    print("nothing")
+                elif WinRes == 1:
+                    print("balck win")
+                else:
+                    print("red win")
 top = tkinter.Tk()
 top.title("Line of Action")
 top.geometry('500x500')
