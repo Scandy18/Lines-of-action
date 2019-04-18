@@ -47,7 +47,7 @@ check_map = []
 def black_DFS(x,y):
     global con_count
     global check_map
-    check_map[x][y] == 10
+    check_map[x][y] = 10
     con_count += 1
     if check_map[x-1][y-1] == 1:
         black_DFS(x-1,y-1)    
@@ -69,7 +69,7 @@ def black_DFS(x,y):
 def white_DFS(x,y):
     global con_count
     global check_map
-    check_map[x][y] == 20
+    check_map[x][y] = 20
     con_count += 1
     if check_map[x-1][y-1] == 2:
         white_DFS(x-1,y-1)    
