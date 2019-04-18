@@ -1,7 +1,7 @@
 import tkinter
 
 SIDE = 1  # white:0, black:1
-SELECTED = 0 # white:1 black:2
+SELECTED = 0  # white:1 black:2
 SELECTED_WHITE_PIECE = 0
 SELECTED_BLACK_PIECE = 0
 # tag of pieces
@@ -33,61 +33,65 @@ board_situation = [[-1, -1, -1, -1, -1, -1, -1, -1, -1],
                    [-1, 2, 0, 0, 0, 0, 0, 0, 2],
                    [-1, 0, 1, 1, 1, 1, 1, 1, 0]]
 #######################################################
-#use of judge win
-#1.每次吃掉某个子需要从数组中删掉
-#2.为了避免超出范围board_situation下面可以加一层（目前check_map复制之后先手动加了右面与下面一层）
-#3.未测试
-#judge winer:
+# use of judge win
+# 1.每次吃掉某个子需要从数组中删掉
+# 2.为了避免超出范围board_situation下面可以加一层（目前check_map复制之后先手动加了右面与下面一层）
+# 3.未测试
+# judge winner:
 #    1 : black win
 #    0  : not end
 #    -1  : white win
 
-con_count = 0   #the count of continuously piece 
+con_count = 0  # the count of continuously piece 
 check_map = []
-def black_DFS(x,y):
+
+
+def black_DFS(x, y):
     global con_count
     global check_map
     check_map[x][y] = 10
     con_count += 1
-    if check_map[x-1][y-1] == 1:
-        black_DFS(x-1,y-1)    
+    if check_map[x - 1][y - 1] == 1:
+        black_DFS(x - 1, y - 1)
     if check_map[x - 1][y] == 1:
-        black_DFS(x-1,y)
-    if check_map[x-1][y+1] == 1:
-        black_DFS(x-1,y+1)
+        black_DFS(x - 1, y)
+    if check_map[x - 1][y + 1] == 1:
+        black_DFS(x - 1, y + 1)
     if check_map[x][y - 1] == 1:
-        black_DFS(x,y-1)
+        black_DFS(x, y - 1)
     if check_map[x][y + 1] == 1:
-        black_DFS(x,y+1)
-    if check_map[x+1][y-1] == 1:
-        black_DFS(x+1,y-1)
+        black_DFS(x, y + 1)
+    if check_map[x + 1][y - 1] == 1:
+        black_DFS(x + 1, y - 1)
     if check_map[x + 1][y] == 1:
-        black_DFS(x+1,y)
-    if check_map[x+1][y+1] == 1:
-        black_DFS(x+1,y+1)   
-        
-def white_DFS(x,y):
+        black_DFS(x + 1, y)
+    if check_map[x + 1][y + 1] == 1:
+        black_DFS(x + 1, y + 1)
+
+
+def white_DFS(x, y):
     global con_count
     global check_map
     check_map[x][y] = 20
     con_count += 1
-    if check_map[x-1][y-1] == 2:
-        white_DFS(x-1,y-1)    
+    if check_map[x - 1][y - 1] == 2:
+        white_DFS(x - 1, y - 1)
     if check_map[x - 1][y] == 2:
-        white_DFS(x-1,y)
-    if check_map[x-1][y+1] == 2:
-        white_DFS(x-1,y+1)
+        white_DFS(x - 1, y)
+    if check_map[x - 1][y + 1] == 2:
+        white_DFS(x - 1, y + 1)
     if check_map[x][y - 1] == 2:
-        white_DFS(x,y-1)
+        white_DFS(x, y - 1)
     if check_map[x][y + 1] == 2:
-        white_DFS(x,y+1)
-    if check_map[x+1][y-1] == 2:
-        white_DFS(x+1,y-1)
+        white_DFS(x, y + 1)
+    if check_map[x + 1][y - 1] == 2:
+        white_DFS(x + 1, y - 1)
     if check_map[x + 1][y] == 2:
-        white_DFS(x+1,y)
-    if check_map[x+1][y+1] == 2:
-        white_DFS(x+1,y+1) 
-        
+        white_DFS(x + 1, y)
+    if check_map[x + 1][y + 1] == 2:
+        white_DFS(x + 1, y + 1)
+
+
 def judgeWin():
     global black_piece
     global white_piece
@@ -97,41 +101,42 @@ def judgeWin():
     global check_map
     global board_situation
     check_map = board_situation[:]
-    #expand the size to avoid out of index
-    for i in range(0,9):
+    #   expand the size to avoid out of index
+    for i in range(0, 9):
         check_map[i].append(-1)
-    check_map.append([-1,-1,-1,-1,-1,-1,-1,-1,-1,-1])
+    check_map.append([-1, -1, -1, -1, -1, -1, -1, -1, -1, -1])
     if white_piece_count == 1:
         return 1
     if black_piece_count == 1:
         return -1
-    
-    
-    #check black
+
+    #   check black
     con_count = 0
-    for i in range(0,9):
+    for i in range(0, 9):
         if black_piece[i][0] != 114:
             break
     check_x = black_piece[i][0]
     check_y = black_piece[i][1]
-    #for i in range(0,len(black_piece)):
+    #   for i in range(0,len(black_piece)):
     #    check_list.append(0)   #0 represent not check
-    black_DFS(check_x,check_y)
+    black_DFS(check_x, check_y)
     if con_count == black_piece_count:
         return 1
 
-    #check white
+    #   check white
     con_count = 0
-    for i in range(0,9):
+    for i in range(0, 9):
         if white_piece[i][0] != 114:
             break
     check_x = white_piece[i][0]
     check_y = white_piece[i][1]
-    white_DFS(check_x,check_y)
+    white_DFS(check_x, check_y)
     if con_count == white_piece_count:
         return -1
-    
+
     return 0
+
+
 ##########################################################
 
 def reset():
@@ -312,14 +317,14 @@ def mouse_call(event):
     global right_side_mark
     print("click at", posx, posy)
     if not SELECTED:
-        if SIDE and [posx, posy] in black_piece:    # black and clicked a black piece
+        if SIDE and [posx, posy] in black_piece:  # black and clicked a black piece
             SELECTED = 1
             SELECTED_BLACK_PIECE = black_piece.index([posx, posy])
             print("Select Black", SELECTED_BLACK_PIECE)
             print(legal_move(black_piece[SELECTED_BLACK_PIECE]))
             print_legal_move_marks(legal_move(black_piece[SELECTED_BLACK_PIECE]))
 
-        if not SIDE and [posx, posy] in white_piece:    # white and clicked a white piece
+        if not SIDE and [posx, posy] in white_piece:  # white and clicked a white piece
             SELECTED = 1
             SELECTED_WHITE_PIECE = white_piece.index([posx, posy])
             print("Select White", SELECTED_WHITE_PIECE)
@@ -327,7 +332,7 @@ def mouse_call(event):
             print_legal_move_marks(legal_move(white_piece[SELECTED_WHITE_PIECE]))
     else:
         if SIDE:  # black
-            if [posx, posy] == black_piece[SELECTED_BLACK_PIECE]:   # click the selected piece
+            if [posx, posy] == black_piece[SELECTED_BLACK_PIECE]:  # click the selected piece
                 SELECTED = 0
                 del_legal_move_marks()
                 print("Release piece")
@@ -365,15 +370,8 @@ def mouse_call(event):
                 SIDE = 0
                 left_side.delete(left_side_mark)
                 right_side_mark = right_side.create_oval(39, 139, 61, 161, fill="white")
-                WinRes = judgeWin()
-                if WinRes == 0:
-                    print("nothing")
-                elif WinRes == 1:
-                    print("balck win")
-                else:
-                    print("red win")
         else:  # white
-            if [posx, posy] == white_piece[SELECTED_WHITE_PIECE]:   # click the selected piece
+            if [posx, posy] == white_piece[SELECTED_WHITE_PIECE]:  # click the selected piece
                 SELECTED = 0
                 del_legal_move_marks()
                 print("Release piece")
@@ -411,13 +409,15 @@ def mouse_call(event):
                 SIDE = 1
                 right_side.delete(right_side_mark)
                 left_side_mark = left_side.create_oval(39, 139, 61, 161, fill="black")
-                WinRes = judgeWin()
-                if WinRes == 0:
-                    print("nothing")
-                elif WinRes == 1:
-                    print("balck win")
-                else:
-                    print("red win")
+    winres = judgeWin()
+    if winres == 0:
+        print("nothing")
+    elif winres == 1:
+        print("black win")
+    else:
+        print("white win")
+
+
 top = tkinter.Tk()
 top.title("Line of Action")
 top.geometry('500x500')
@@ -433,8 +433,8 @@ board.create_rectangle(29, 29, 271, 271)
 board.create_text(150, 15, text='A  B  C  D  E  F  G  H', font="Courier 13 bold")
 board.create_text(150, 285, text='A  B  C  D  E  F  G  H', font="Courier 13 bold")
 for i in range(8):
-    board.create_text(15, 45 + 30 * i, text=8-i, font="Courier 13 bold")
-    board.create_text(285, 45 + 30 * i, text=8-i, font="Courier 13 bold")
+    board.create_text(15, 45 + 30 * i, text=8 - i, font="Courier 13 bold")
+    board.create_text(285, 45 + 30 * i, text=8 - i, font="Courier 13 bold")
 
 for i in range(12):
     white_in_canvas.append(board.create_oval(white_piece[i][0] * 30 + 4, 300 - (white_piece[i][1] * 30 + 4),
