@@ -218,7 +218,11 @@ def main():
     init_node = TreeNode()
     init_node.set_state(init_state)
     current_node = init_node
-    for i in range(10):
+    for i in range(10): # set round
         current_node = MCTS(current_node)
-
+        best_move = current_node.get_state().get_cumulative_choices()[-1]
+        # tell board to apply the best move
+        # human play
+        current_node.get_state().set_current_board(LineOfA.board_situation) # update node board for human's move
+        current_node.set_pieces()
 
