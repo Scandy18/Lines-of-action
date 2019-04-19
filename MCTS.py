@@ -4,8 +4,9 @@ import random
 import copy
 
 
-MAX_ROUND = 202
+MAX_ROUND = 200
 ################### init bot = 1 player = 0
+
 
 class State(object):
     def __init__(self):
@@ -31,9 +32,9 @@ class State(object):
         self.current_round_index = turn
 
     def compute_reward(self):
-        if winner == 1:
-            return  1
-        elif winner == 0:
+        if self.winner == 1:
+            return 1
+        elif self.winner == 0:
             return -1
         else:
             print("error, compute_reward not called correctly")
@@ -53,6 +54,7 @@ class State(object):
         else:
             self.pieces = white_piece
 ################not soluted :global virable
+
     def get_pieces(self):
         return self.pieces
 
@@ -84,6 +86,7 @@ class State(object):
         return next_state
 #############################################judge winner
     #can't call
+
     def check_winner(self):
         self.winner = LineOfA.judgeWin()
 
