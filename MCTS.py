@@ -211,6 +211,10 @@ def MCTS(node):
 
 def main():
     init_state = State()
+    bot_player = 0  # set white
+    init_state.set_player(bot_player)
+    init_state.set_current_board(LineOfA.board_situation)
+    init_state.set_pieces()
     init_node = TreeNode()
     init_node.set_state(init_state)
     current_node = init_node
