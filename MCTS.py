@@ -82,13 +82,13 @@ class State(object):
         next_state.check_winner()
         #
         return next_state
-#############################################judge winner 
+#############################################judge winner
     #can't call
     def check_winner(self):
         self.winner = LineOfA.judgeWin()
 
     def is_terminal(self):
-    
+
         if self.winner != 0:  # find winner
             return True
         elif self.current_round_index == MAX_ROUND:  # too many round and no winner
@@ -225,12 +225,12 @@ def MCTS(node):
     return best_next_node
 
 
-def MCT_step():#need varibles:
+def MCT_step(board, pieces):#need varibles:
                #board_situation,balck
     init_state = State()
     bot_player = 1  # set white
     init_state.set_player(1) #bot player
-    init_state.set_current_board(board_situation)
+    init_state.set_current_board(board)
     init_state.set_pieces()
     init_node = TreeNode()
     init_node.set_state(init_state)
