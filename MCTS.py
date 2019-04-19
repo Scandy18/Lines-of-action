@@ -2,10 +2,10 @@ import math
 import sys
 import random
 import copy
-import LineOf
+
 
 MAX_ROUND = 202
-
+################### init bot = 1 player = 0
 
 class State(object):
     def __init__(self):
@@ -31,7 +31,12 @@ class State(object):
         self.current_round_index = turn
 
     def compute_reward(self):
-        return 1 - self.current_value  # need change
+        if winner == 1:
+            return  1
+        elif winner == 0:
+            return -1
+        else:
+            print("error, compute_reward not called correctly")
 
     def set_value(self, value):
         self.current_value = value
@@ -64,7 +69,7 @@ class State(object):
 
         random_piece_choice = random.choice([choice for choice in self.get_pieces()])
 
-        self.legal_move_list = LineOfA.legal_move(random_piece_choice)
+        self.legal_move_list = legal_move(random_piece_choice,self.board)
         random_move_choice = random.choice([choice for choice in self.get_legal_move_list()])
 
         self.update_board(random_piece_choice, random_move_choice)  # update board
@@ -77,11 +82,13 @@ class State(object):
         next_state.check_winner()
         #
         return next_state
-
+#############################################judge winner 
+    #can't call
     def check_winner(self):
         self.winner = LineOfA.judgeWin()
 
     def is_terminal(self):
+    
         if self.winner != 0:  # find winner
             return True
         elif self.current_round_index == MAX_ROUND:  # too many round and no winner
@@ -172,9 +179,12 @@ def expand(node):
 
 def play_out(node):  # need evaluation function for reward
     current_state = node.get_state()
+    height = 1
     while not current_state.is_terminal():
+        height += 1
         current_state = current_state.get_next_state()
-    final_state_reward = current_state.compute_reward()
+    final_state_reward = current_state.compute_reward()/height
+    # final reward = winorlose / height
     return final_state_reward
 
 
