@@ -1,7 +1,8 @@
 import math
 import sys
 import random
-import LineOfA
+import copy
+import LineOf
 
 MAX_ROUND = 202
 
@@ -37,13 +38,16 @@ class State(object):
 
     def set_player(self, player):
         self.player = player
+        # 0 player
+        # 1 bot player
 
     def set_pieces(self):
-        if self.player == 1:
-            self.pieces = LineOfA.black_piece
-        else:
-            self.pieces = LineOfA.white_piece
 
+        if self.player == 1:
+            self.pieces = black_piece
+        else:
+            self.pieces = white_piece
+################not soluted :global virable
     def get_pieces(self):
         return self.pieces
 
@@ -51,7 +55,7 @@ class State(object):
         return self.legal_move_list
 
     def set_current_board(self, board):
-        self.board = board
+        self.board = copy.deepcopy(board)
 
     def update_board(self, piece, move):  # tell board the move
         self.board = self.board  # need change
@@ -186,6 +190,8 @@ def best_child(node, is_exploration):
         left = child.get_quality_value() / child.get_vistit_number()
         right = 2.0 * math.log(node.get_visit_number()) / child.get_vistit_number()
         score = left + C * math.sqrt(right)
+        #log_total = log(sum(Psteps[(player, S)])for player,S in moves_state)
+        #score = (wins_list[(player,S)] / Psteps[(player,S)]) + C * sqrt(log_total / Psteps[(player,S)]), for player,S in moves_state)
         if score > best_score:
             best_score = score
             best_sub_node = child
@@ -209,11 +215,12 @@ def MCTS(node):
     return best_next_node
 
 
-def main():
+def MCT_step():#need varibles:
+               #board_situation,balck
     init_state = State()
-    bot_player = 0  # set white
-    init_state.set_player(bot_player)
-    init_state.set_current_board(LineOfA.board_situation)
+    bot_player = 1  # set white
+    init_state.set_player(1) #bot player
+    init_state.set_current_board(board_situation)
     init_state.set_pieces()
     init_node = TreeNode()
     init_node.set_state(init_state)
@@ -225,4 +232,3 @@ def main():
         # human play
         current_node.get_state().set_current_board(LineOfA.board_situation) # update node board for human's move
         current_node.set_pieces()
-
