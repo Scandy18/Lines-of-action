@@ -91,7 +91,7 @@ class State(object):
         self.pieces[self.pieces.index(selected_piece)] = move
         #eat piece
         #update temp
-        if self.player == 1:
+        if self.player == 2:
             temp_piece = temp_white_piece
             temp_black_piece  = copy.deepcopy(self.pieces)
         else:
@@ -108,10 +108,6 @@ class State(object):
 
     def get_next_state(self):
 
-        random_piece_choice = random.choice([choice for choice in self.get_pieces()])
-
-        self.legal_move_list = self.legal_move(random_piece_choice)
-        random_move_choice = random.choice([choice for choice in self.get_legal_move_list()])
 
         #self.update_board(random_piece_choice, random_move_choice)  # update board
         next_state = State()
@@ -119,9 +115,15 @@ class State(object):
             next_state.set_player(2)
         else:
             next_state.set_player(1)
+        next_state.set_pieces()
+        
+        random_piece_choice = random.choice([choice for choice in next_state.get_pieces()])
+        next_state.legal_move_list = next_state.legal_move(random_piece_choice)
+        random_move_choice = random.choice([choice for choice in next_state.get_legal_move_list()])
+
         next_state.set_cumulative_choices(self.get_cumulative_choices() + [random_piece_choice, random_move_choice])
         next_state.set_current_board(self.board)
-        next_state.set_pieces()
+        
         next_state.set_line(self.line_count)
         next_state.update_board(random_piece_choice, random_move_choice)  # update board
         next_state.set_current_round_index(self.current_round_index + 1)
