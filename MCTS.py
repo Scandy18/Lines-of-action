@@ -98,11 +98,11 @@ class State(object):
         #eat piece
         #update temp
         if self.player == 2:
-            tempC = 0
+            tempC = 1
             temp_piece = temp_white_piece
             temp_black_piece  = copy.deepcopy(self.pieces)
         else:
-            tempC = 1
+            tempC = 0
             temp_piece = temp_black_piece
             temp_white_piece  = copy.deepcopy(self.pieces)
         if move in temp_piece:
@@ -411,7 +411,7 @@ def MCT_step(board_situation,black_piece,white_piece,line_count,black_piece_coun
     init_node.set_state(init_state)
 
     #def MCTS(node):
-    computation_budget = 2  #times for select
+    computation_budget = 20  #times for select
     for i in range(computation_budget):
         temp_black_piece = copy.deepcopy(black_piece)
         temp_white_piece = copy.deepcopy(white_piece)
