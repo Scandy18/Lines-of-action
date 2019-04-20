@@ -88,7 +88,6 @@ def reset():
                      white_piece[i][0] * 30 + 26, 300 - (white_piece[i][1] * 30 + 26))
 
 
-
 def legal_move(piece):
     x: int = piece[0]
     y: int = piece[1]
@@ -203,6 +202,48 @@ def del_legal_move_marks():
     legal_move_marks.clear()
 
 
+def AI_move():
+    global SIDE
+    global left_side_mark
+    global black_piece_count
+    if not SIDE:  # white bot
+        ret = MCTS.MCT_step(board_situation, black_piece, white_piece, line_count, black_piece_count, white_piece_count)
+        move_piece_index = white_piece.index(ret[0])
+        oldx = ret[0][0]
+        oldy = ret[0][1]
+        posx = ret[1][0]
+        posy = ret[1][1]
+        # update board situation
+        board_situation[oldx][oldy] = 0
+        board_situation[posx][posy] = 1
+        line_count[oldx + 7] = line_count[oldx + 7] - 1
+        line_count[oldy - 1] = line_count[oldy - 1] - 1
+        line_count[oldx + oldy + 13] = line_count[oldx + oldy + 13] - 1
+        if oldx != 8 and oldy != 1:
+            line_count[oldx - oldy + 35] = line_count[oldx - oldy + 35] - 1
+        # update piece info
+        white_piece[move_piece_index] = [posx, posy]
+        # update canvas
+        board.coords(white_in_canvas[move_piece_index],
+                     posx * 30 + 4, (9 - posy) * 30 + 4,
+                     posx * 30 + 26, (9 - posy) * 30 + 26
+                     )
+        # eat piece
+        if [posx, posy] in black_piece:  # one black out
+            board.coords(black_in_canvas[black_piece.index([posx, posy])], 301, 301, 301, 301)  # move out
+            black_piece[black_piece.index([posx, posy])] = [114, 114]
+            black_piece_count = black_piece_count - 1
+        else:
+            line_count[posx + 7] = line_count[posx + 7] + 1
+            line_count[posy - 1] = line_count[posy - 1] + 1
+            line_count[posx + posy + 13] = line_count[posx + posy + 13] + 1
+            if posx != 8 and posy != 1:
+                line_count[posx - posy + 35] = line_count[posx - posy + 35] + 1
+        # change side to black
+        SIDE = 1
+        right_side.delete(right_side_mark)
+        left_side_mark = left_side.create_oval(39, 139, 61, 161, fill="black")
+
 def mouse_call(event):
     posx = event.x // 30  # 1-8
     posy = 9 - event.y // 30  # 8-1
@@ -223,13 +264,13 @@ def mouse_call(event):
             print("Select Black", SELECTED_BLACK_PIECE)
             print_legal_move_marks(legal_move(black_piece[SELECTED_BLACK_PIECE]))
 
-        if not SIDE and [posx, posy] in white_piece:  # white and clicked a white piece
-            print("AI side:")
-            print(MCTS.MCT_step(board_situation, black_piece, white_piece, line_count,black_piece_count, white_piece_count))
-            SELECTED = 1
-            SELECTED_WHITE_PIECE = white_piece.index([posx, posy])
-            print("Select White", SELECTED_WHITE_PIECE)
-            print_legal_move_marks(legal_move(white_piece[SELECTED_WHITE_PIECE]))
+        # if not SIDE and [posx, posy] in white_piece:  # white and clicked a white piece
+        #     print("AI side:")
+        #     print(MCTS.MCT_step(board_situation, black_piece, white_piece, line_count, black_piece_count, white_piece_count))
+        #     SELECTED = 1
+        #     SELECTED_WHITE_PIECE = white_piece.index([posx, posy])
+        #     print("Select White", SELECTED_WHITE_PIECE)
+        #     print_legal_move_marks(legal_move(white_piece[SELECTED_WHITE_PIECE]))
     else:
         if SIDE:  # black
             if [posx, posy] == black_piece[SELECTED_BLACK_PIECE]:  # click the selected piece
@@ -272,49 +313,49 @@ def mouse_call(event):
                 SIDE = 0
                 left_side.delete(left_side_mark)
                 right_side_mark = right_side.create_oval(39, 139, 61, 161, fill="white")
-        else:  # white
-            if [posx, posy] == white_piece[SELECTED_WHITE_PIECE]:  # click the selected piece
-                SELECTED = 0
-                del_legal_move_marks()
-                print("Release piece")
-            elif [posx, posy] in legal_move(white_piece[SELECTED_WHITE_PIECE]):
-                SELECTED = 0
-                del_legal_move_marks()
-                oldx = white_piece[SELECTED_WHITE_PIECE][0]
-                oldy = white_piece[SELECTED_WHITE_PIECE][1]
-                # update board situation
-                board_situation[oldx][oldy] = 0  # empty
-                board_situation[posx][posy] = 1  # white
-                # update line of board
-                line_count[oldx + 7] = line_count[oldx + 7] - 1
-                line_count[oldy - 1] = line_count[oldy - 1] - 1
-                line_count[oldx + oldy + 13] = line_count[oldx + oldy + 13] - 1
-                if oldx != 8 and oldy != 1:
-                    line_count[oldx - oldy + 35] = line_count[oldx - oldy + 35] - 1
-                # update piece info
-                white_piece[SELECTED_WHITE_PIECE] = [posx, posy]
-                # update canvas
-                board.coords(white_in_canvas[SELECTED_WHITE_PIECE],
-                             posx * 30 + 4, (9 - posy) * 30 + 4,
-                             posx * 30 + 26, (9 - posy) * 30 + 26
-                             )
-                # eat piece
-                if [posx, posy] in black_piece:  # one black out
-                    board.coords(black_in_canvas[black_piece.index([posx, posy])], 301, 301, 301, 301)  # move out
-                    black_piece[black_piece.index([posx, posy])] = [114, 114]
-                    black_piece_count = black_piece_count - 1
-                else:
-                    line_count[posx + 7] = line_count[posx + 7] + 1
-                    line_count[posy - 1] = line_count[posy - 1] + 1
-                    line_count[posx + posy + 13] = line_count[posx + posy + 13] + 1
-                    if posx != 8 and posy != 1:
-                        line_count[posx - posy + 35] = line_count[posx - posy + 35] + 1
-                # change side to black
-                SIDE = 1
-                right_side.delete(right_side_mark)
-                left_side_mark = left_side.create_oval(39, 139, 61, 161, fill="black")
+        # else:  # white
+        #     if [posx, posy] == white_piece[SELECTED_WHITE_PIECE]:  # click the selected piece
+        #         SELECTED = 0
+        #         del_legal_move_marks()
+        #         print("Release piece")
+        #     elif [posx, posy] in legal_move(white_piece[SELECTED_WHITE_PIECE]):
+        #         SELECTED = 0
+        #         del_legal_move_marks()
+        #         oldx = white_piece[SELECTED_WHITE_PIECE][0]
+        #         oldy = white_piece[SELECTED_WHITE_PIECE][1]
+        #         # update board situation
+        #         board_situation[oldx][oldy] = 0  # empty
+        #         board_situation[posx][posy] = 1  # white
+        #         # update line of board
+        #         line_count[oldx + 7] = line_count[oldx + 7] - 1
+        #         line_count[oldy - 1] = line_count[oldy - 1] - 1
+        #         line_count[oldx + oldy + 13] = line_count[oldx + oldy + 13] - 1
+        #         if oldx != 8 and oldy != 1:
+        #             line_count[oldx - oldy + 35] = line_count[oldx - oldy + 35] - 1
+        #         # update piece info
+        #         white_piece[SELECTED_WHITE_PIECE] = [posx, posy]
+        #         # update canvas
+        #         board.coords(white_in_canvas[SELECTED_WHITE_PIECE],
+        #                      posx * 30 + 4, (9 - posy) * 30 + 4,
+        #                      posx * 30 + 26, (9 - posy) * 30 + 26
+        #                      )
+        #         # eat piece
+        #         if [posx, posy] in black_piece:  # one black out
+        #             board.coords(black_in_canvas[black_piece.index([posx, posy])], 301, 301, 301, 301)  # move out
+        #             black_piece[black_piece.index([posx, posy])] = [114, 114]
+        #             black_piece_count = black_piece_count - 1
+        #         else:
+        #             line_count[posx + 7] = line_count[posx + 7] + 1
+        #             line_count[posy - 1] = line_count[posy - 1] + 1
+        #             line_count[posx + posy + 13] = line_count[posx + posy + 13] + 1
+        #             if posx != 8 and posy != 1:
+        #                 line_count[posx - posy + 35] = line_count[posx - posy + 35] + 1
+        #         # change side to black
+        #         SIDE = 1
+        #         right_side.delete(right_side_mark)
+        #         left_side_mark = left_side.create_oval(39, 139, 61, 161, fill="black")
         winres = Jud.judgeWin(black_piece,white_piece,black_piece_count,white_piece_count,board_situation)
-        if winres == 1:
+        if winres == 1: #
             print("black win")
         elif winres == -1:
             print("white win")
@@ -353,7 +394,8 @@ for i in range(12):
                            )
 
 # reset button
-tkinter.Button(top, text="RESET", command=reset).place(width=80, height=50, x=210, y=325)
+tkinter.Button(top, text="RESET", command=reset).place(width=80, height=50, x=210, y=400)
+tkinter.Button(top, text="AI Move", command=AI_move).place(width=80, height=50, x=210, y=325)
 # player region
 # left is black
 left_side = tkinter.Canvas(top, width=100, height=300)
