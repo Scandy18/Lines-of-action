@@ -146,7 +146,11 @@ class TreeNode:
         self.parent = parent
 
     def is_fully_expanded(self):
-        return len(self.children) == len(self.get_state().get_pieces())
+       # return len(self.children) == len(self.get_state().get_pieces())
+        total_list=[]
+        for piece in self.get_state().get_pieces():
+           total_list.extend(legal_move(piece,self.get_state().board))
+        return len(self.children) ==len(total_list)
 
     def get_children(self):
         return self.children
