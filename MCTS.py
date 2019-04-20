@@ -104,7 +104,8 @@ class State(object):
             self.line_count[move[0] + 7] = self.line_count[move[0] + 7] + 1
             self.line_count[move[1] - 1] = self.line_count[move[1] - 1] + 1
             self.line_count[move[0] + move[1] + 13] = self.line_count[move[0] + move[1] + 13] + 1
-            self.line_count[move[0] - move[1] + 35] = self.line_count[move[0] - move[1] + 35] + 1
+            if move[0] != 8 and move[1] != 1:
+                self.line_count[move[0] - move[1] + 35] = self.line_count[move[0] - move[1] + 35] + 1
 
     def get_next_state(self):
 

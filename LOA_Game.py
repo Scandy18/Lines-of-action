@@ -264,7 +264,8 @@ def mouse_call(event):
                     line_count[posx + 7] = line_count[posx + 7] + 1
                     line_count[posy - 1] = line_count[posy - 1] + 1
                     line_count[posx + posy + 13] = line_count[posx + posy + 13] + 1
-                    line_count[posx - posy + 35] = line_count[posx - posy + 35] + 1
+                    if posx != 8 and posy != 1:
+                        line_count[posx - posy + 35] = line_count[posx - posy + 35] + 1
                 # change side to white
                 SIDE = 0
                 left_side.delete(left_side_mark)
