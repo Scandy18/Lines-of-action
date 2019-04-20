@@ -121,10 +121,11 @@ class State(object):
             next_state.set_player(1)
         next_state.set_cumulative_choices(self.get_cumulative_choices() + [random_piece_choice, random_move_choice])
         next_state.set_current_board(self.board)
+        next_state.set_pieces()
         next_state.set_line(self.line_count)
         next_state.update_board(random_piece_choice, random_move_choice)  # update board
         next_state.set_current_round_index(self.current_round_index + 1)
-        next_state.set_pieces()
+        
 
         next_state.check_winner()
         #
