@@ -160,27 +160,28 @@ def legal_move(piece):
         if flag:
             move_list.append([x - pace, y + pace])
     # 1-3
-    pace = line_count[x - y + 35]
-    if x + pace <= 8 and y + pace <= 8:
-        flag = True
-        for i in range(1, pace):
-            if board_situation[x + i][y + i] != SIDE + 1 and board_situation[x + i][y + i] != 0:
+    if x != 8 and y != 1:
+        pace = line_count[x - y + 35]
+        if x + pace <= 8 and y + pace <= 8:
+            flag = True
+            for i in range(1, pace):
+                if board_situation[x + i][y + i] != SIDE + 1 and board_situation[x + i][y + i] != 0:
+                    flag = False
+                    break
+            if board_situation[x + pace][y + pace] == SIDE + 1:
                 flag = False
-                break
-        if board_situation[x + pace][y + pace] == SIDE + 1:
-            flag = False
-        if flag:
-            move_list.append([x + pace, y + pace])
-    if x - pace >= 1 and y - pace >= 1:
-        flag = True
-        for i in range(1, pace):
-            if board_situation[x - i][y - i] != SIDE + 1 and board_situation[x - i][y - i] != 0:
+            if flag:
+                move_list.append([x + pace, y + pace])
+        if x - pace >= 1 and y - pace >= 1:
+            flag = True
+            for i in range(1, pace):
+                if board_situation[x - i][y - i] != SIDE + 1 and board_situation[x - i][y - i] != 0:
+                    flag = False
+                    break
+            if board_situation[x - pace][y - pace] == SIDE + 1:
                 flag = False
-                break
-        if board_situation[x - pace][y - pace] == SIDE + 1:
-            flag = False
-        if flag:
-            move_list.append([x - pace, y - pace])
+            if flag:
+                move_list.append([x - pace, y - pace])
     return move_list
 
 
@@ -247,7 +248,8 @@ def mouse_call(event):
                 line_count[oldx + 7] = line_count[oldx + 7] - 1
                 line_count[oldy - 1] = line_count[oldy - 1] - 1
                 line_count[oldx + oldy + 13] = line_count[oldx + oldy + 13] - 1
-                line_count[oldx - oldy + 35] = line_count[oldx - oldy + 35] - 1
+                if oldx != 8 and oldy != 1:
+                    line_count[oldx - oldy + 35] = line_count[oldx - oldy + 35] - 1
                 # update piece info
                 black_piece[SELECTED_BLACK_PIECE] = [posx, posy]
                 # update canvas
@@ -287,7 +289,8 @@ def mouse_call(event):
                 line_count[oldx + 7] = line_count[oldx + 7] - 1
                 line_count[oldy - 1] = line_count[oldy - 1] - 1
                 line_count[oldx + oldy + 13] = line_count[oldx + oldy + 13] - 1
-                line_count[oldx - oldy + 35] = line_count[oldx - oldy + 35] - 1
+                if oldx != 8 and oldy != 1:
+                    line_count[oldx - oldy + 35] = line_count[oldx - oldy + 35] - 1
                 # update piece info
                 white_piece[SELECTED_WHITE_PIECE] = [posx, posy]
                 # update canvas
@@ -304,7 +307,8 @@ def mouse_call(event):
                     line_count[posx + 7] = line_count[posx + 7] + 1
                     line_count[posy - 1] = line_count[posy - 1] + 1
                     line_count[posx + posy + 13] = line_count[posx + posy + 13] + 1
-                    line_count[posx - posy + 35] = line_count[posx - posy + 35] + 1
+                    if posx != 8 and posy != 1:
+                        line_count[posx - posy + 35] = line_count[posx - posy + 35] + 1
                 # change side to black
                 SIDE = 1
                 right_side.delete(right_side_mark)
