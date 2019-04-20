@@ -6,7 +6,9 @@ import copy
 
 
 MAX_ROUND = 202
-temp_board = []
+#模拟到当前的两方棋子
+temp_black_piece = []
+temp_white_piece = []
 ################### init bot = 1 player = 2
 
 #每一个state指的是下完一步后的格局，player指的是下一步要走的某方
@@ -49,12 +51,12 @@ class State(object):
         # 2 player
         # 1 bot player
 
-    def set_pieces(self):
+    def set_pieces(self,piece):
 
         if self.player == 1:
-            self.pieces = black_piece
+            self.pieces = copy.deepcopy(temp_white_piece)
         else:
-            self.pieces = white_piece
+            self.pieces = copy.deepcopy(temp_black_piece)
 ################not soluted :global virable
     def get_pieces(self):
         return self.pieces
@@ -65,17 +67,37 @@ class State(object):
     def set_current_board(self, board):
         self.board = copy.deepcopy(board)
 
-    def update_board(self, piece, move):  # tell board the move
-        oldx = black_piece[piece][0]
-        oldy = black_piece[piece][1]
+    def update_board(self, selected_piece, move):  # tell board the move
+        global temp_white_piece
+        global temp_black_piece
+        oldx = selected_piece[0]
+        oldy = selected_piece[1]
         # update board situation
         self.board[oldx][oldy] = 0  # empty
-        self.board[move[0]][move[1]] = 2  # black
-
-         # update piece info
-        black_piece[SELECTED_BLACK_PIECE] = [posx, posy]
-
-        self.board = self.board  # need change
+        self.board[move[0]][move[1]] = 2  # 
+        #line information
+        line_count[oldx + 7] = line_count[oldx + 7] - 1
+        line_count[oldy - 1] = line_count[oldy - 1] - 1
+        line_count[oldx + oldy + 13] = line_count[oldx + oldy + 13] - 1
+        line_count[oldx - oldy + 35] = line_count[oldx - oldy + 35] - 1
+        # update piece info
+        self.piece[self.piece.index(selected_piece)] = [posx, posy]
+        #eat piece
+        #update temp
+        if self.player == 1:
+            temp_piece = temp_white_piece
+            temp_black_piece  = copy.deepcopy(self.piece)
+        else:
+            temp_piece = temp_black_piece
+            temp_white_piece  = copy.deepcopy(self.piece)
+        if move in temp_piece:
+            temp_piece[temp_piece.index(move)] = [114,114]
+            #white_piece_count = white_piece_count-1
+        else:
+            line_count[posx + 7] = line_count[posx + 7] + 1
+            line_count[posy - 1] = line_count[posy - 1] + 1
+            line_count[posx + posy + 13] = line_count[posx + posy + 13] + 1
+            line_count[posx - posy + 35] = line_count[posx - posy + 35] + 1
 
     def get_next_state(self):
 
@@ -85,17 +107,17 @@ class State(object):
         random_move_choice = random.choice([choice for choice in self.get_legal_move_list()])
 
         #self.update_board(random_piece_choice, random_move_choice)  # update board
-
+        temp_board = copy.deepcopy(self.board)
         next_state = State()
-        next_state.set_current_board(temp_board)
-        next_state.update_board(random_piece_choice, random_move_choice)  # update board
-        next_state.set_current_round_index(self.current_round_index + 1)
         if(self.player == 1):
             next_state.set_player(2)
         else:
             next_state.set_player(1)
-        next_state.set_player(2:1)
         next_state.set_cumulative_choices(self.get_cumulative_choices() + [random_piece_choice, random_move_choice])
+        next_state.set_current_board(temp_board)
+        next_state.update_board(random_piece_choice, random_move_choice)  # update board
+        next_state.set_current_round_index(self.current_round_index + 1)
+        
         next_state.check_winner()
         #
         return next_state
@@ -128,7 +150,7 @@ class State(object):
 class TreeNode:
     def __init__(self):
         self.parent = None
-        self.children = {}
+        self.children = []
         self.visit_number = 0
         self.quality_value = 0.0
         self.state = None
@@ -146,11 +168,11 @@ class TreeNode:
         self.parent = parent
 
     def is_fully_expanded(self):
-       # return len(self.children) == len(self.get_state().get_pieces())
-        total_list=[]
+        #return len(self.children) == len(self.get_state().get_pieces())
+        total_list =  []
         for piece in self.get_state().get_pieces():
-           total_list.extend(legal_move(piece,self.get_state().board))
-        return len(self.children) ==len(total_list)
+            total_list.extend(legal_move(piece,self.get_state().board))
+        return(len(total_list) == len(self.children))
 
     def get_children(self):
         return self.children
@@ -243,6 +265,7 @@ def back_propagation(node, reward):
 
 
 def MCTS(node):
+    
     computation_budget = 2  #
     for i in range(computation_budget):
         expand_node = tree_policy(node)
@@ -252,8 +275,9 @@ def MCTS(node):
     return best_next_node
 
 
-def MCT_step():#need varibles:
-               #board_situation,balck
+def MCT_step(board_situation,black_piece,white_piece,line_count,black_piece_count,white_piece_count):
+    global temp_black_piece
+    global temp_white_piece
     init_state = State()
     bot_player = 1  # set white
     init_state.set_player(1) #bot player
