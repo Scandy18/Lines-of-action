@@ -1,6 +1,7 @@
 import tkinter
 import copy
 import Jud
+import MCTS
 
 SIDE = 1  # white:0, black:1
 SELECTED = 0  # white:1 black:2
@@ -51,6 +52,7 @@ def reset():
     if not SIDE:
         right_side.delete(right_side_mark)
         left_side_mark = left_side.create_oval(39, 139, 61, 161, fill="black")
+    del_legal_move_marks()
     SIDE = 1
     SELECTED = 0
     SELECTED_BLACK_PIECE = 0
@@ -84,6 +86,7 @@ def reset():
         board.coords(white_in_canvas[i],
                      white_piece[i][0] * 30 + 4, 300 - (white_piece[i][1] * 30 + 4),
                      white_piece[i][0] * 30 + 26, 300 - (white_piece[i][1] * 30 + 26))
+
 
 
 def legal_move(piece):
@@ -265,6 +268,8 @@ def mouse_call(event):
                 left_side.delete(left_side_mark)
                 right_side_mark = right_side.create_oval(39, 139, 61, 161, fill="white")
         else:  # white
+            print("AI side:")
+            print(MCTS.MCT_step(board_situation, black_piece, white_piece, line_count,black_piece_count, white_piece_count))
             if [posx, posy] == white_piece[SELECTED_WHITE_PIECE]:  # click the selected piece
                 SELECTED = 0
                 del_legal_move_marks()
@@ -314,9 +319,13 @@ top = tkinter.Tk()
 top.title("Line of Action")
 top.geometry('500x500')
 top.resizable(width=False, height=False)
-# draw board
+
+'''
+board region
+'''
 board = tkinter.Canvas(top, width=300, height=300, bg='Beige')
 board.bind("<Button-1>", mouse_call)
+#
 board.pack()
 for i in range(1, 9):
     for j in range(1, 9):
@@ -327,7 +336,6 @@ board.create_text(150, 285, text='A  B  C  D  E  F  G  H', font="Courier 13 bold
 for i in range(8):
     board.create_text(15, 45 + 30 * i, text=8 - i, font="Courier 13 bold")
     board.create_text(285, 45 + 30 * i, text=8 - i, font="Courier 13 bold")
-
 for i in range(12):
     white_in_canvas.append(board.create_oval(white_piece[i][0] * 30 + 4, 300 - (white_piece[i][1] * 30 + 4),
                                              white_piece[i][0] * 30 + 26, 300 - (white_piece[i][1] * 30 + 26),
@@ -338,7 +346,10 @@ for i in range(12):
                                              black_piece[i][0] * 30 + 26, 300 - (black_piece[i][1] * 30 + 26),
                                              fill="black")
                            )
+
+# reset button
 tkinter.Button(top, text="RESET", command=reset).place(width=80, height=50, x=210, y=325)
+# player region
 # left is black
 left_side = tkinter.Canvas(top, width=100, height=300)
 left_side.create_text(50, 100, text='BLACK', font="Courier 16 bold")
@@ -351,4 +362,5 @@ right_side.create_text(50, 100, text='WHITE', font="Courier 16 bold")
 if not SIDE:
     right_side_mark = left_side.create_oval(39, 139, 61, 161, fill="white")
 right_side.place(x=400, y=0)
+
 top.mainloop()

@@ -272,12 +272,14 @@ def MCTS(node):
         reward = play_out(expand_node)
         back_propagation(expand_node, reward)
     best_next_node = best_child(node, False)
+    print("calculating...")
     return best_next_node
 
 
 def MCT_step(board_situation,black_piece,white_piece,line_count,black_piece_count,white_piece_count):
     global temp_black_piece
     global temp_white_piece
+    print("MCTSing")
     init_state = State()
     bot_player = 1  # set white
     init_state.set_player(1) #bot player
