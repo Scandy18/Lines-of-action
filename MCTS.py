@@ -120,6 +120,8 @@ class State(object):
         next_state.set_pieces()
         
         random_piece_choice = random.choice([choice for choice in next_state.get_pieces()])
+        while random_piece_choice[0] == 114:
+            random_piece_choice = random.choice([choice for choice in next_state.get_pieces()])
         next_state.legal_move_list = next_state.legal_move(random_piece_choice)
         random_move_choice = random.choice([choice for choice in next_state.get_legal_move_list()])
 
