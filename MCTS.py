@@ -54,7 +54,7 @@ class State(object):
         # 2 player
         # 1 bot player
 
-    def set_pieces(self,piece):
+    def set_pieces(self):
 
         if self.player == 1:
             self.pieces = copy.deepcopy(temp_white_piece)
@@ -124,7 +124,8 @@ class State(object):
         next_state.set_line(self.line_count)
         next_state.update_board(random_piece_choice, random_move_choice)  # update board
         next_state.set_current_round_index(self.current_round_index + 1)
-        
+        next_state.set_pieces()
+
         next_state.check_winner()
         #
         return next_state
@@ -368,33 +369,37 @@ def back_propagation(node, reward):
         node = node.parent
 
 
-def MCTS(node):
+
     
-    computation_budget = 2  #
-    for i in range(computation_budget):
-        expand_node = tree_policy(node)
-        reward = play_out(expand_node)
-        back_propagation(expand_node, reward)
-    best_next_node = best_child(node, False)
-    print("calculating...")
-    return best_next_node
+    
 
 
 def MCT_step(board_situation,black_piece,white_piece,line_count,black_piece_count,white_piece_count):
     global temp_black_piece
     global temp_white_piece
+    temp_black_piece = copy.deepcopy(black_piece)
+    temp_white_piece = copy.deepcopy(white_piece)
     print("MCTSing")
     init_state = State()
     init_state.set_player(1) #bot player
     init_state.set_current_board(board_situation)#set board
-    init_state.set_pieces(white_piece)  #No pieces
+    init_state.set_pieces()  #set pieces
     init_state.set_count(black_piece_count,white_piece_count)#set count
     init_state.set_line(line_count)     #set line_count
     init_node = TreeNode()
     init_node.set_state(init_state)
-    current_node = init_node
 
-    current_node = MCTS(current_node)
+    #def MCTS(node):
+    computation_budget = 2  #times for select
+    for i in range(computation_budget):
+        temp_black_piece = copy.deepcopy(black_piece)
+        temp_white_piece = copy.deepcopy(white_piece)
+        expand_node = tree_policy(init_node)
+        reward = play_out(expand_node)
+        back_propagation(expand_node, reward)
+    current_node = best_child(init_node, False)
+    print("calculating...")
+    #current_node = MCTS(current_node)
     best_move = current_node.get_state().get_cumulative_choices()[-1]
     # tell board to apply the best move   
     return best_move
