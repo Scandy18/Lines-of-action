@@ -381,7 +381,7 @@ def MCT_step(board_situation,black_piece,white_piece,line_count,black_piece_coun
     temp_white_piece = copy.deepcopy(white_piece)
     print("MCTSing")
     init_state = State()
-    init_state.set_player(1) #bot player
+    init_state.set_player(2) #bot player
     init_state.set_current_board(board_situation)#set board
     init_state.set_pieces()  #set pieces
     init_state.set_count(black_piece_count,white_piece_count)#set count

@@ -223,6 +223,8 @@ def mouse_call(event):
             print_legal_move_marks(legal_move(black_piece[SELECTED_BLACK_PIECE]))
 
         if not SIDE and [posx, posy] in white_piece:  # white and clicked a white piece
+            print("AI side:")
+            print(MCTS.MCT_step(board_situation, black_piece, white_piece, line_count,black_piece_count, white_piece_count))
             SELECTED = 1
             SELECTED_WHITE_PIECE = white_piece.index([posx, posy])
             print("Select White", SELECTED_WHITE_PIECE)
@@ -268,8 +270,6 @@ def mouse_call(event):
                 left_side.delete(left_side_mark)
                 right_side_mark = right_side.create_oval(39, 139, 61, 161, fill="white")
         else:  # white
-            print("AI side:")
-            print(MCTS.MCT_step(board_situation, black_piece, white_piece, line_count,black_piece_count, white_piece_count))
             if [posx, posy] == white_piece[SELECTED_WHITE_PIECE]:  # click the selected piece
                 SELECTED = 0
                 del_legal_move_marks()
