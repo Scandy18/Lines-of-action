@@ -2,7 +2,9 @@ import tkinter
 import copy
 import Jud
 import MCTS
+import time
 
+total_time_cost = 0
 SIDE = 1  # white:0, black:1
 SELECTED = 0  # white:1 black:2
 SELECTED_WHITE_PIECE = 0
@@ -203,12 +205,20 @@ def del_legal_move_marks():
 
 
 def AI_move():
+    global total_time_cost
     global SIDE
     global left_side_mark
     global black_piece_count
     if not SIDE:  # white bot
+        time_start = time.time()
         ret = MCTS.MCT_step(board_situation, black_piece, white_piece, line_count, black_piece_count, white_piece_count)
+        time_end = time.time()
+        time_cost = round(time_end - time_start, 4)
+        total_time_cost += time_cost
         print(ret)
+        print('totally cost = ', time_cost, 's')
+        if time_cost > 60:
+            print("black win")
         move_piece_index = white_piece.index(ret[0])
         oldx = ret[0][0]
         oldy = ret[0][1]
@@ -357,10 +367,12 @@ def mouse_call(event):
         #         right_side.delete(right_side_mark)
         #         left_side_mark = left_side.create_oval(39, 139, 61, 161, fill="black")
         winres = Jud.judgeWin(black_piece,white_piece,black_piece_count,white_piece_count,board_situation)
-        if winres == 1: #
+        if winres == 1:
             print("black win")
+            print(total_time_cost)
         elif winres == -1:
             print("white win")
+            print(total_time_cost)
 
 
 top = tkinter.Tk()

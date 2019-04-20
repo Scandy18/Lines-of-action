@@ -410,7 +410,7 @@ def MCT_step(board_situation,black_piece,white_piece,line_count,black_piece_coun
     init_node.set_state(init_state)
 
     #def MCTS(node):
-    computation_budget = 20  #times for select
+    computation_budget = 100  #times for select
     for i in range(computation_budget):
         temp_black_piece = copy.deepcopy(black_piece)
         temp_white_piece = copy.deepcopy(white_piece)
@@ -418,7 +418,6 @@ def MCT_step(board_situation,black_piece,white_piece,line_count,black_piece_coun
         reward = play_out(expand_node)
         back_propagation(expand_node, reward)
     current_node = best_child(init_node, False)
-    print("calculating...")
     #current_node = MCTS(current_node)
     best_move = current_node.get_state().get_cumulative_choices()
     # tell board to apply the best move   
