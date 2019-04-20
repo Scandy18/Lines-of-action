@@ -74,7 +74,7 @@ def judgeWin(black_piece,white_piece,black_piece_count,white_piece_count,board_s
 
     #   check black
     con_count = 0
-    for i in range(0, 9):
+    for i in range(0, 12):
         if black_piece[i][0] != 114:
             break
     check_x = black_piece[i][0]
@@ -87,7 +87,7 @@ def judgeWin(black_piece,white_piece,black_piece_count,white_piece_count,board_s
 
     #   check white
     con_count = 0
-    for i in range(0, 9):
+    for i in range(0, 12):
         if white_piece[i][0] != 114:
             break
     check_x = white_piece[i][0]
