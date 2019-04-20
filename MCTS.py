@@ -62,6 +62,7 @@ class State(object):
             self.pieces = copy.deepcopy(temp_black_piece)
     def set_line(self,line):
         self.line_count = copy.deepcopy(line)
+################not soluted :global virable
     def get_pieces(self):
         return self.pieces
 
@@ -109,7 +110,7 @@ class State(object):
 
         random_piece_choice = random.choice([choice for choice in self.get_pieces()])
 
-        self.legal_move_list = self.legal_move(random_piece_choice,self.board)
+        self.legal_move_list = self.legal_move(random_piece_choice)
         random_move_choice = random.choice([choice for choice in self.get_legal_move_list()])
 
         #self.update_board(random_piece_choice, random_move_choice)  # update board
@@ -145,12 +146,110 @@ class State(object):
             return True
         else:
             return False
+    ###################################仿照主函数里的legalmove##############
+    def legal_move(self,piece):
+        x: int = piece[0]
+        y: int = piece[1]
+        move_list = []
+        # up-down
+        if self.player == 1:
+            SIDE = 0 #white
+        else:
+            SIDE = 1
+        pace = self.line_count[x + 7]
+        if y + pace <= 8:
+            flag = True
+            for i in range(1, pace):
+                if self.board[x][y + i] != SIDE + 1 and self.board[x][y + i] != 0:
+                    flag = False
+                    break
+            if self.board[x][y + pace] == SIDE + 1:
+                flag = False
+            if flag:
+                move_list.append([x, y + pace])
+        if y - pace >= 1:
+            flag = True
+            for i in range(1, pace):
+                if self.board[x][y - i] != SIDE + 1 and self.board[x][y - i] != 0:
+                    flag = False
+                    break
+            if self.board[x][y - pace] == SIDE + 1:
+                flag = False
+            if flag:
+                move_list.append([x, y - pace])
+        # left-right
+        pace = self.line_count[y - 1]
+        if x + pace <= 8:
+            flag = True
+            for i in range(1, pace):
+                if self.board[x + i][y] != SIDE + 1 and self.board[x + i][y] != 0:
+                    flag = False
+                    break
+            if self.board[x + pace][y] == SIDE + 1:
+                flag = False
+            if flag:
+                move_list.append([x + pace, y])
+        if x - pace >= 1:
+            flag = True
+            for i in range(1, pace):
+                if self.board[x - i][y] != SIDE + 1 and self.board[x - i][y] != 0:
+                    flag = False
+                    break
+            if self.board[x - pace][y] == SIDE + 1:
+                flag = False
+            if flag:
+                move_list.append([x - pace, y])
+        # 2-4
+        pace = self.line_count[x + y + 13]
+        if x + pace <= 8 and y - pace >= 1:
+            flag = True
+            for i in range(1, pace):
+                if self.board[x + i][y - i] != SIDE + 1 and self.board[x + i][y - i] != 0:
+                    flag = False
+                    break
+            if self.board[x + pace][y - pace] == SIDE + 1:
+                flag = False
+            if flag:
+                move_list.append([x + pace, y - pace])
+        if x - pace >= 1 and y + pace <= 8:
+            flag = True
+            for i in range(1, pace):
+                if self.board[x - i][y + i] != SIDE + 1 and self.board[x - i][y + i] != 0:
+                    flag = False
+                    break
+            if self.board[x - pace][y + pace] == SIDE + 1:
+                flag = False
+            if flag:
+                move_list.append([x - pace, y + pace])
+        # 1-3
+        pace = self.line_count[x - y + 35]
+        if x + pace <= 8 and y + pace <= 8:
+            flag = True
+            for i in range(1, pace):
+                if self.board[x + i][y + i] != SIDE + 1 and self.board[x + i][y + i] != 0:
+                    flag = False
+                    break
+            if self.board[x + pace][y + pace] == SIDE + 1:
+                flag = False
+            if flag:
+                move_list.append([x + pace, y + pace])
+        if x - pace >= 1 and y - pace >= 1:
+            flag = True
+            for i in range(1, pace):
+                if self.board[x - i][y - i] != SIDE + 1 and self.board[x - i][y - i] != 0:
+                    flag = False
+                    break
+            if self.board[x - pace][y - pace] == SIDE + 1:
+                flag = False
+            if flag:
+                move_list.append([x - pace, y - pace])
+        return move_list    
 
     def __repr__(self):
         return "State: {}, value: {}, round: {}, choices: {}".format(hash(self), self.current_value,
                                                                      self.current_round_index,
                                                                      self.cumulative_choices)
-
+    
 
 class TreeNode:
     def __init__(self):
@@ -176,7 +275,7 @@ class TreeNode:
         #return len(self.children) == len(self.get_state().get_pieces())
         total_list =  []
         for piece in self.get_state().get_pieces():
-            total_list.extend(legal_move(piece,self.get_state().board))
+            total_list.extend(self.state.legal_move(piece))
         return(len(total_list) == len(self.children))
 
     def get_children(self):
