@@ -45,6 +45,7 @@ class State(object):
             return -1
         else:
             print("error, compute_reward not called correctly")
+            return 0
 
     def set_value(self, value):
         self.current_value = value
@@ -60,9 +61,11 @@ class State(object):
             self.pieces = copy.deepcopy(temp_white_piece)
         else:
             self.pieces = copy.deepcopy(temp_black_piece)
+
     def set_line(self,line):
         self.line_count = copy.deepcopy(line)
 ################not soluted :global virable
+
     def get_pieces(self):
         return self.pieces
 
@@ -71,9 +74,11 @@ class State(object):
 
     def set_current_board(self, board):
         self.board = copy.deepcopy(board)
+
     def set_count(self,x,y):
         self.count[0] = x
         self.count[1] = y
+
     def update_board(self, selected_piece, move):  # tell board the move
         global temp_white_piece
         global temp_black_piece
@@ -157,6 +162,7 @@ class State(object):
         else:
             return False
     ###################################仿照主函数里的legalmove##############
+
     def legal_move(self,piece):
         x: int = piece[0]
         y: int = piece[1]
