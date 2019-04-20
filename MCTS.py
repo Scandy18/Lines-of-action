@@ -120,9 +120,12 @@ class State(object):
         next_state.set_pieces()
         
         random_piece_choice = random.choice([choice for choice in next_state.get_pieces()])
-        while random_piece_choice[0] == 114:
+        while True:
+            if random_piece_choice[0] != 114:
+                next_state.legal_move_list = next_state.legal_move(random_piece_choice)
+                if len(next_state.legal_move_list) != 0:
+                    break
             random_piece_choice = random.choice([choice for choice in next_state.get_pieces()])
-        next_state.legal_move_list = next_state.legal_move(random_piece_choice)
         random_move_choice = random.choice([choice for choice in next_state.get_legal_move_list()])
 
         next_state.set_cumulative_choices(self.get_cumulative_choices() + [random_piece_choice, random_move_choice])
@@ -341,6 +344,7 @@ def play_out(node):  # need evaluation function for reward
     height = 1
     while not current_state.is_terminal():
         height += 1
+        print(height)
         current_state = current_state.get_next_state()
     final_state_reward = current_state.compute_reward()/height
     # final reward = winorlose / height
@@ -356,8 +360,8 @@ def best_child(node, is_exploration):
             C = 1 / math.sqrt(2.0)
         else:
             C = 0.0
-        left = child.get_quality_value() / child.get_vistit_number()
-        right = 2.0 * math.log(node.get_visit_number()) / child.get_vistit_number()
+        left = child.get_quality_value() / child.get_visit_number()
+        right = 2.0 * math.log(node.get_visit_number()) / child.get_visit_number()
         score = left + C * math.sqrt(right)
         #log_total = log(sum(Psteps[(player, S)])for player,S in moves_state)
         #score = (wins_list[(player,S)] / Psteps[(player,S)]) + C * sqrt(log_total / Psteps[(player,S)]), for player,S in moves_state)
