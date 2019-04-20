@@ -2,6 +2,7 @@ import math
 import sys
 import random
 import copy
+import Jud
 
 
 
@@ -19,7 +20,9 @@ class State(object):
         self.current_round_index = 0
         self.winner = 0
         self.player = 0
+        self.count = [12,12]
         self.pieces = []
+        self.line_count = []
         self.legal_move_list = []
         self.cumulative_choices = []
 
@@ -36,9 +39,9 @@ class State(object):
         self.current_round_index = turn
 
     def compute_reward(self):
-        if winner == 1:
+        if self.winner == 1:
             return  1
-        elif winner == 2:
+        elif self.winner == 2:
             return -1
         else:
             print("error, compute_reward not called correctly")
@@ -57,7 +60,8 @@ class State(object):
             self.pieces = copy.deepcopy(temp_white_piece)
         else:
             self.pieces = copy.deepcopy(temp_black_piece)
-################not soluted :global virable
+    def set_line(self,line):
+        self.line_count = copy.deepcopy(line)
     def get_pieces(self):
         return self.pieces
 
@@ -66,7 +70,9 @@ class State(object):
 
     def set_current_board(self, board):
         self.board = copy.deepcopy(board)
-
+    def set_count(self,x,y):
+        self.count[0] = x
+        self.count[1] = y
     def update_board(self, selected_piece, move):  # tell board the move
         global temp_white_piece
         global temp_black_piece
@@ -76,45 +82,45 @@ class State(object):
         self.board[oldx][oldy] = 0  # empty
         self.board[move[0]][move[1]] = 2  # 
         #line information
-        line_count[oldx + 7] = line_count[oldx + 7] - 1
-        line_count[oldy - 1] = line_count[oldy - 1] - 1
-        line_count[oldx + oldy + 13] = line_count[oldx + oldy + 13] - 1
-        line_count[oldx - oldy + 35] = line_count[oldx - oldy + 35] - 1
+        self.line_count[oldx + 7] = self.line_count[oldx + 7] - 1
+        self.line_count[oldy - 1] = self.line_count[oldy - 1] - 1
+        self.line_count[oldx + oldy + 13] = self.line_count[oldx + oldy + 13] - 1
+        self.line_count[oldx - oldy + 35] = self.line_count[oldx - oldy + 35] - 1
         # update piece info
-        self.piece[self.piece.index(selected_piece)] = [posx, posy]
+        self.pieces[self.pieces.index(selected_piece)] = move
         #eat piece
         #update temp
         if self.player == 1:
             temp_piece = temp_white_piece
-            temp_black_piece  = copy.deepcopy(self.piece)
+            temp_black_piece  = copy.deepcopy(self.pieces)
         else:
             temp_piece = temp_black_piece
-            temp_white_piece  = copy.deepcopy(self.piece)
+            temp_white_piece  = copy.deepcopy(self.pieces)
         if move in temp_piece:
             temp_piece[temp_piece.index(move)] = [114,114]
             #white_piece_count = white_piece_count-1
         else:
-            line_count[posx + 7] = line_count[posx + 7] + 1
-            line_count[posy - 1] = line_count[posy - 1] + 1
-            line_count[posx + posy + 13] = line_count[posx + posy + 13] + 1
-            line_count[posx - posy + 35] = line_count[posx - posy + 35] + 1
+            self.line_count[move[0] + 7] = self.line_count[move[0] + 7] + 1
+            self.line_count[move[1] - 1] = self.line_count[move[1] - 1] + 1
+            self.line_count[move[0] + move[1] + 13] = self.line_count[move[0] + move[1] + 13] + 1
+            self.line_count[move[0] - move[1] + 35] = self.line_count[move[0] - move[1] + 35] + 1
 
     def get_next_state(self):
 
         random_piece_choice = random.choice([choice for choice in self.get_pieces()])
 
-        self.legal_move_list = legal_move(random_piece_choice,self.board)
+        self.legal_move_list = self.legal_move(random_piece_choice,self.board)
         random_move_choice = random.choice([choice for choice in self.get_legal_move_list()])
 
         #self.update_board(random_piece_choice, random_move_choice)  # update board
-        temp_board = copy.deepcopy(self.board)
         next_state = State()
         if(self.player == 1):
             next_state.set_player(2)
         else:
             next_state.set_player(1)
         next_state.set_cumulative_choices(self.get_cumulative_choices() + [random_piece_choice, random_move_choice])
-        next_state.set_current_board(temp_board)
+        next_state.set_current_board(self.board)
+        next_state.set_line(self.line_count)
         next_state.update_board(random_piece_choice, random_move_choice)  # update board
         next_state.set_current_round_index(self.current_round_index + 1)
         
@@ -122,9 +128,8 @@ class State(object):
         #
         return next_state
 #############################################judge winner 
-    #can't call
     def check_winner(self):
-        x = LineOfA.judgeWin()
+        x = Jud.judgeWin(temp_black_piece,temp_white_piece,self.count[0],self.count[1],self.board)
         if x == 1:
             self.winner = 2
         elif x == 0:
@@ -281,10 +286,11 @@ def MCT_step(board_situation,black_piece,white_piece,line_count,black_piece_coun
     global temp_white_piece
     print("MCTSing")
     init_state = State()
-    bot_player = 1  # set white
     init_state.set_player(1) #bot player
-    init_state.set_current_board(board_situation)
-    init_state.set_pieces()
+    init_state.set_current_board(board_situation)#set board
+    init_state.set_pieces(white_piece)  #No pieces
+    init_state.set_count(black_piece_count,white_piece_count)#set count
+    init_state.set_line(line_count)     #set line_count
     init_node = TreeNode()
     init_node.set_state(init_state)
     current_node = init_node
@@ -292,7 +298,6 @@ def MCT_step(board_situation,black_piece,white_piece,line_count,black_piece_coun
     current_node = MCTS(current_node)
     best_move = current_node.get_state().get_cumulative_choices()[-1]
     # tell board to apply the best move   
-    
     return best_move
     #best_move 目前是 [要走的棋子，[x,y](目的地)]
     #current_node.get_state().set_current_board(LineOfA.board_situation) # update node board for human's move
