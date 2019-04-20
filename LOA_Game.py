@@ -1,7 +1,9 @@
 import tkinter
+import copy
+import Jud
 
 SIDE = 1  # white:0, black:1
-SELECTED = 0 # white:1 black:2
+SELECTED = 0  # white:1 black:2
 SELECTED_WHITE_PIECE = 0
 SELECTED_BLACK_PIECE = 0
 # tag of pieces
@@ -92,7 +94,7 @@ def legal_move(piece):
     pace = line_count[x + 7]
     if y + pace <= 8:
         flag = True
-        for i in range(1, pace - 1):
+        for i in range(1, pace):
             if board_situation[x][y + i] != SIDE + 1 and board_situation[x][y + i] != 0:
                 flag = False
                 break
@@ -102,7 +104,7 @@ def legal_move(piece):
             move_list.append([x, y + pace])
     if y - pace >= 1:
         flag = True
-        for i in range(1, pace - 1):
+        for i in range(1, pace):
             if board_situation[x][y - i] != SIDE + 1 and board_situation[x][y - i] != 0:
                 flag = False
                 break
@@ -114,7 +116,7 @@ def legal_move(piece):
     pace = line_count[y - 1]
     if x + pace <= 8:
         flag = True
-        for i in range(1, pace - 1):
+        for i in range(1, pace):
             if board_situation[x + i][y] != SIDE + 1 and board_situation[x + i][y] != 0:
                 flag = False
                 break
@@ -122,9 +124,9 @@ def legal_move(piece):
             flag = False
         if flag:
             move_list.append([x + pace, y])
-    if x - pace >= 0:
+    if x - pace >= 1:
         flag = True
-        for i in range(1, pace - 1):
+        for i in range(1, pace):
             if board_situation[x - i][y] != SIDE + 1 and board_situation[x - i][y] != 0:
                 flag = False
                 break
@@ -136,7 +138,7 @@ def legal_move(piece):
     pace = line_count[x + y + 13]
     if x + pace <= 8 and y - pace >= 1:
         flag = True
-        for i in range(1, pace - 1):
+        for i in range(1, pace):
             if board_situation[x + i][y - i] != SIDE + 1 and board_situation[x + i][y - i] != 0:
                 flag = False
                 break
@@ -146,7 +148,7 @@ def legal_move(piece):
             move_list.append([x + pace, y - pace])
     if x - pace >= 1 and y + pace <= 8:
         flag = True
-        for i in range(1, pace - 1):
+        for i in range(1, pace):
             if board_situation[x - i][y + i] != SIDE + 1 and board_situation[x - i][y + i] != 0:
                 flag = False
                 break
@@ -158,7 +160,7 @@ def legal_move(piece):
     pace = line_count[x - y + 35]
     if x + pace <= 8 and y + pace <= 8:
         flag = True
-        for i in range(1, pace - 1):
+        for i in range(1, pace):
             if board_situation[x + i][y + i] != SIDE + 1 and board_situation[x + i][y + i] != 0:
                 flag = False
                 break
@@ -168,7 +170,7 @@ def legal_move(piece):
             move_list.append([x + pace, y + pace])
     if x - pace >= 1 and y - pace >= 1:
         flag = True
-        for i in range(1, pace - 1):
+        for i in range(1, pace):
             if board_situation[x - i][y - i] != SIDE + 1 and board_situation[x - i][y - i] != 0:
                 flag = False
                 break
@@ -210,24 +212,21 @@ def mouse_call(event):
     global white_piece_count
     global left_side_mark
     global right_side_mark
-    print("click at", posx, posy)
     if not SELECTED:
-        if SIDE and [posx, posy] in black_piece:    # black and clicked a black piece
+        if SIDE and [posx, posy] in black_piece:  # black and clicked a black piece
             SELECTED = 1
             SELECTED_BLACK_PIECE = black_piece.index([posx, posy])
             print("Select Black", SELECTED_BLACK_PIECE)
-            print(legal_move(black_piece[SELECTED_BLACK_PIECE]))
             print_legal_move_marks(legal_move(black_piece[SELECTED_BLACK_PIECE]))
 
-        if not SIDE and [posx, posy] in white_piece:    # white and clicked a white piece
+        if not SIDE and [posx, posy] in white_piece:  # white and clicked a white piece
             SELECTED = 1
             SELECTED_WHITE_PIECE = white_piece.index([posx, posy])
             print("Select White", SELECTED_WHITE_PIECE)
-            print(legal_move(white_piece[SELECTED_WHITE_PIECE]))
             print_legal_move_marks(legal_move(white_piece[SELECTED_WHITE_PIECE]))
     else:
         if SIDE:  # black
-            if [posx, posy] == black_piece[SELECTED_BLACK_PIECE]:   # click the selected piece
+            if [posx, posy] == black_piece[SELECTED_BLACK_PIECE]:  # click the selected piece
                 SELECTED = 0
                 del_legal_move_marks()
                 print("Release piece")
@@ -266,7 +265,7 @@ def mouse_call(event):
                 left_side.delete(left_side_mark)
                 right_side_mark = right_side.create_oval(39, 139, 61, 161, fill="white")
         else:  # white
-            if [posx, posy] == white_piece[SELECTED_WHITE_PIECE]:   # click the selected piece
+            if [posx, posy] == white_piece[SELECTED_WHITE_PIECE]:  # click the selected piece
                 SELECTED = 0
                 del_legal_move_marks()
                 print("Release piece")
@@ -304,6 +303,11 @@ def mouse_call(event):
                 SIDE = 1
                 right_side.delete(right_side_mark)
                 left_side_mark = left_side.create_oval(39, 139, 61, 161, fill="black")
+        winres = Jud.judgeWin(black_piece,white_piece,black_piece_count,white_piece_count,board_situation)
+        if winres == 1:
+            print("black win")
+        elif winres == -1:
+            print("white win")
 
 
 top = tkinter.Tk()
@@ -321,8 +325,8 @@ board.create_rectangle(29, 29, 271, 271)
 board.create_text(150, 15, text='A  B  C  D  E  F  G  H', font="Courier 13 bold")
 board.create_text(150, 285, text='A  B  C  D  E  F  G  H', font="Courier 13 bold")
 for i in range(8):
-    board.create_text(15, 45 + 30 * i, text=8-i, font="Courier 13 bold")
-    board.create_text(285, 45 + 30 * i, text=8-i, font="Courier 13 bold")
+    board.create_text(15, 45 + 30 * i, text=8 - i, font="Courier 13 bold")
+    board.create_text(285, 45 + 30 * i, text=8 - i, font="Courier 13 bold")
 
 for i in range(12):
     white_in_canvas.append(board.create_oval(white_piece[i][0] * 30 + 4, 300 - (white_piece[i][1] * 30 + 4),
@@ -348,4 +352,3 @@ if not SIDE:
     right_side_mark = left_side.create_oval(39, 139, 61, 161, fill="white")
 right_side.place(x=400, y=0)
 top.mainloop()
-
