@@ -98,14 +98,16 @@ class State(object):
         #eat piece
         #update temp
         if self.player == 2:
+            tempC = 0
             temp_piece = temp_white_piece
             temp_black_piece  = copy.deepcopy(self.pieces)
         else:
+            tempC = 1
             temp_piece = temp_black_piece
             temp_white_piece  = copy.deepcopy(self.pieces)
         if move in temp_piece:
             temp_piece[temp_piece.index(move)] = [114,114]
-            #white_piece_count = white_piece_count-1
+            self.count[tempC] -= 1
         else:
             self.line_count[move[0] + 7] = self.line_count[move[0] + 7] + 1
             self.line_count[move[1] - 1] = self.line_count[move[1] - 1] + 1
@@ -125,6 +127,7 @@ class State(object):
         next_state.set_line(self.line_count)
         next_state.set_current_board(self.board)
         next_state.set_pieces()
+        next_state.count = copy.deepcopy(self.count)
         
         random_piece_choice = random.choice([choice for choice in next_state.get_pieces()])
         while True:
