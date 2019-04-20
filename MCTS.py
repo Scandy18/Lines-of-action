@@ -29,8 +29,9 @@ class State(object):
     def get_cumulative_choices(self):
         return self.cumulative_choices
 
-    def set_cumulative_choices(self, choice):
-        self.cumulative_choices = choice
+    def set_cumulative_choices(self, choice, move):
+        self.cumulative_choices.append(choice)
+        self.cumulative_choices.append(move)
 
     def get_current_round_index(self):
         return self.current_round_index
@@ -134,7 +135,7 @@ class State(object):
             random_piece_choice = random.choice([choice for choice in next_state.get_pieces()])
         random_move_choice = random.choice([choice for choice in next_state.get_legal_move_list()])
 
-        next_state.set_cumulative_choices(self.get_cumulative_choices() + [random_piece_choice, random_move_choice])
+        next_state.set_cumulative_choices(random_piece_choice, random_move_choice)
         
         next_state.update_board(random_piece_choice, random_move_choice)  # update board
         next_state.set_current_round_index(self.current_round_index + 1)
@@ -417,7 +418,7 @@ def MCT_step(board_situation,black_piece,white_piece,line_count,black_piece_coun
     current_node = best_child(init_node, False)
     print("calculating...")
     #current_node = MCTS(current_node)
-    best_move = current_node.get_state().get_cumulative_choices()[-1]
+    best_move = current_node.get_state().get_cumulative_choices()
     # tell board to apply the best move   
     return best_move
     #best_move 目前是 [要走的棋子，[x,y](目的地)]
