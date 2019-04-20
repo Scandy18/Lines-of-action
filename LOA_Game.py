@@ -159,7 +159,7 @@ def legal_move(piece):
         if flag:
             move_list.append([x - pace, y + pace])
     # 1-3
-    if x != 8 and y != 1:
+    if x != 8 or y != 1:
         pace = line_count[x - y + 35]
         if x + pace <= 8 and y + pace <= 8:
             flag = True
@@ -208,6 +208,7 @@ def AI_move():
     global black_piece_count
     if not SIDE:  # white bot
         ret = MCTS.MCT_step(board_situation, black_piece, white_piece, line_count, black_piece_count, white_piece_count)
+        print(ret)
         move_piece_index = white_piece.index(ret[0])
         oldx = ret[0][0]
         oldy = ret[0][1]
@@ -219,7 +220,7 @@ def AI_move():
         line_count[oldx + 7] = line_count[oldx + 7] - 1
         line_count[oldy - 1] = line_count[oldy - 1] - 1
         line_count[oldx + oldy + 13] = line_count[oldx + oldy + 13] - 1
-        if oldx != 8 and oldy != 1:
+        if oldx != 8 or oldy != 1:
             line_count[oldx - oldy + 35] = line_count[oldx - oldy + 35] - 1
         # update piece info
         white_piece[move_piece_index] = [posx, posy]
@@ -237,12 +238,13 @@ def AI_move():
             line_count[posx + 7] = line_count[posx + 7] + 1
             line_count[posy - 1] = line_count[posy - 1] + 1
             line_count[posx + posy + 13] = line_count[posx + posy + 13] + 1
-            if posx != 8 and posy != 1:
+            if posx != 8 or posy != 1:
                 line_count[posx - posy + 35] = line_count[posx - posy + 35] + 1
         # change side to black
         SIDE = 1
         right_side.delete(right_side_mark)
         left_side_mark = left_side.create_oval(39, 139, 61, 161, fill="black")
+
 
 def mouse_call(event):
     posx = event.x // 30  # 1-8
@@ -289,7 +291,7 @@ def mouse_call(event):
                 line_count[oldx + 7] = line_count[oldx + 7] - 1
                 line_count[oldy - 1] = line_count[oldy - 1] - 1
                 line_count[oldx + oldy + 13] = line_count[oldx + oldy + 13] - 1
-                if oldx != 8 and oldy != 1:
+                if oldx != 8 or oldy != 1:
                     line_count[oldx - oldy + 35] = line_count[oldx - oldy + 35] - 1
                 # update piece info
                 black_piece[SELECTED_BLACK_PIECE] = [posx, posy]
@@ -330,7 +332,7 @@ def mouse_call(event):
         #         line_count[oldx + 7] = line_count[oldx + 7] - 1
         #         line_count[oldy - 1] = line_count[oldy - 1] - 1
         #         line_count[oldx + oldy + 13] = line_count[oldx + oldy + 13] - 1
-        #         if oldx != 8 and oldy != 1:
+        #         if oldx != 8 or oldy != 1:
         #             line_count[oldx - oldy + 35] = line_count[oldx - oldy + 35] - 1
         #         # update piece info
         #         white_piece[SELECTED_WHITE_PIECE] = [posx, posy]
@@ -348,7 +350,7 @@ def mouse_call(event):
         #             line_count[posx + 7] = line_count[posx + 7] + 1
         #             line_count[posy - 1] = line_count[posy - 1] + 1
         #             line_count[posx + posy + 13] = line_count[posx + posy + 13] + 1
-        #             if posx != 8 and posy != 1:
+        #             if posx != 8 or posy != 1:
         #                 line_count[posx - posy + 35] = line_count[posx - posy + 35] + 1
         #         # change side to black
         #         SIDE = 1

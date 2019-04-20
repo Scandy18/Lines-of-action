@@ -91,7 +91,7 @@ class State(object):
         self.line_count[oldx + 7] = self.line_count[oldx + 7] - 1
         self.line_count[oldy - 1] = self.line_count[oldy - 1] - 1
         self.line_count[oldx + oldy + 13] = self.line_count[oldx + oldy + 13] - 1
-        if oldx != 8 and oldy != 1:
+        if oldx != 8 or oldy != 1:
             self.line_count[oldx - oldy + 35] = self.line_count[oldx - oldy + 35] - 1
         # update piece info
         self.pieces[self.pieces.index(selected_piece)] = move
@@ -112,7 +112,7 @@ class State(object):
             self.line_count[move[0] + 7] = self.line_count[move[0] + 7] + 1
             self.line_count[move[1] - 1] = self.line_count[move[1] - 1] + 1
             self.line_count[move[0] + move[1] + 13] = self.line_count[move[0] + move[1] + 13] + 1
-            if move[0] != 8 and move[1] != 1:
+            if move[0] != 8 or move[1] != 1:
                 self.line_count[move[0] - move[1] + 35] = self.line_count[move[0] - move[1] + 35] + 1
 
     def get_next_state(self):
@@ -242,7 +242,7 @@ class State(object):
             if flag:
                 move_list.append([x - pace, y + pace])
         # 1-3
-        if x != 8 and y != 1:
+        if x != 8 or y != 1:
             pace = self.line_count[x - y + 35]
             if x + pace <= 8 and y + pace <= 8:
                 flag = True
@@ -356,7 +356,6 @@ def play_out(node):  # need evaluation function for reward
     height = 1
     while not current_state.is_terminal():
         height += 1
-        print(height)
         current_state = current_state.get_next_state()
     final_state_reward = current_state.compute_reward()/height
     # final reward = winorlose / height
@@ -411,7 +410,7 @@ def MCT_step(board_situation,black_piece,white_piece,line_count,black_piece_coun
     init_node.set_state(init_state)
 
     #def MCTS(node):
-    computation_budget = 2  #times for select
+    computation_budget = 100  #times for select
     for i in range(computation_budget):
         temp_black_piece = copy.deepcopy(black_piece)
         temp_white_piece = copy.deepcopy(white_piece)
