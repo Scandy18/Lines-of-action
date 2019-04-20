@@ -293,11 +293,11 @@ class TreeNode:
         self.parent = parent
 
     def is_fully_expanded(self):
-        #return len(self.children) == len(self.get_state().get_pieces())
-        total_list =  []
-        for piece in self.get_state().get_pieces():
-            total_list.extend(self.state.legal_move(piece))
-        return(len(total_list) == len(self.children))
+        # return len(self.children) == len(self.get_state().get_pieces())
+        total_list = []
+        # for piece in self.get_state().get_pieces():
+        #     total_list.extend(self.state.legal_move(piece))
+        return 100 == len(self.children)
 
     def get_children(self):
         return self.children
