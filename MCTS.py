@@ -4,10 +4,12 @@ import random
 import copy
 
 
-MAX_ROUND = 200
-################### init bot = 1 player = 0
 
+MAX_ROUND = 202
+temp_board = []
+################### init bot = 1 player = 2
 
+#每一个state指的是下完一步后的格局，player指的是下一步要走的某方
 class State(object):
     def __init__(self):
         self.current_value = 0.0
@@ -32,9 +34,9 @@ class State(object):
         self.current_round_index = turn
 
     def compute_reward(self):
-        if self.winner == 1:
-            return 1
-        elif self.winner == 0:
+        if winner == 1:
+            return  1
+        elif winner == 2:
             return -1
         else:
             print("error, compute_reward not called correctly")
@@ -44,7 +46,7 @@ class State(object):
 
     def set_player(self, player):
         self.player = player
-        # 0 player
+        # 2 player
         # 1 bot player
 
     def set_pieces(self):
@@ -54,7 +56,6 @@ class State(object):
         else:
             self.pieces = white_piece
 ################not soluted :global virable
-
     def get_pieces(self):
         return self.pieces
 
@@ -65,6 +66,15 @@ class State(object):
         self.board = copy.deepcopy(board)
 
     def update_board(self, piece, move):  # tell board the move
+        oldx = black_piece[piece][0]
+        oldy = black_piece[piece][1]
+        # update board situation
+        self.board[oldx][oldy] = 0  # empty
+        self.board[move[0]][move[1]] = 2  # black
+
+         # update piece info
+        black_piece[SELECTED_BLACK_PIECE] = [posx, posy]
+
         self.board = self.board  # need change
 
     def get_next_state(self):
@@ -74,24 +84,34 @@ class State(object):
         self.legal_move_list = legal_move(random_piece_choice,self.board)
         random_move_choice = random.choice([choice for choice in self.get_legal_move_list()])
 
-        self.update_board(random_piece_choice, random_move_choice)  # update board
+        #self.update_board(random_piece_choice, random_move_choice)  # update board
 
         next_state = State()
-        next_state.set_current_board(LineOfA.board_situation)
+        next_state.set_current_board(temp_board)
+        next_state.update_board(random_piece_choice, random_move_choice)  # update board
         next_state.set_current_round_index(self.current_round_index + 1)
-        next_state.set_player(self.player)
+        if(self.player == 1):
+            next_state.set_player(2)
+        else:
+            next_state.set_player(1)
+        next_state.set_player(2:1)
         next_state.set_cumulative_choices(self.get_cumulative_choices() + [random_piece_choice, random_move_choice])
         next_state.check_winner()
         #
         return next_state
-#############################################judge winner
+#############################################judge winner 
     #can't call
-
     def check_winner(self):
-        self.winner = LineOfA.judgeWin()
+        x = LineOfA.judgeWin()
+        if x == 1:
+            self.winner = 2
+        elif x == 0:
+            self.winner = 0
+        else:
+            self.winner =  1
 
     def is_terminal(self):
-
+    
         if self.winner != 0:  # find winner
             return True
         elif self.current_round_index == MAX_ROUND:  # too many round and no winner
@@ -192,7 +212,7 @@ def play_out(node):  # need evaluation function for reward
 
 
 def best_child(node, is_exploration):
-    best_score = -sys.maxsize
+    best_score = -1e6
     best_sub_node = None
 
     for child in node.get_children():
@@ -228,20 +248,22 @@ def MCTS(node):
     return best_next_node
 
 
-def MCT_step(board, pieces):#need varibles:
+def MCT_step():#need varibles:
                #board_situation,balck
     init_state = State()
     bot_player = 1  # set white
     init_state.set_player(1) #bot player
-    init_state.set_current_board(board)
+    init_state.set_current_board(board_situation)
     init_state.set_pieces()
     init_node = TreeNode()
     init_node.set_state(init_state)
     current_node = init_node
-    for i in range(10): # set round
-        current_node = MCTS(current_node)
-        best_move = current_node.get_state().get_cumulative_choices()[-1]
-        # tell board to apply the best move
-        # human play
-        current_node.get_state().set_current_board(LineOfA.board_situation) # update node board for human's move
-        current_node.set_pieces()
+
+    current_node = MCTS(current_node)
+    best_move = current_node.get_state().get_cumulative_choices()[-1]
+    # tell board to apply the best move   
+    
+    return best_move
+    #best_move 目前是 [要走的棋子，[x,y](目的地)]
+    #current_node.get_state().set_current_board(LineOfA.board_situation) # update node board for human's move
+    #current_node.set_pieces()
